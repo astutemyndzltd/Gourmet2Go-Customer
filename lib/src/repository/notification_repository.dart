@@ -83,7 +83,7 @@ Future<void> sendNotification(String body, String title, User user) async {
       "id": "messages",
       "status": "done"
     },
-    "to": "${user.deviceToken}",
+    "to": "${user.deviceToken}"
     /*"apns": {
       "payload": {
         "aps": {
@@ -92,6 +92,7 @@ Future<void> sendNotification(String body, String title, User user) async {
       }
     }*/
   };
+
   final String url = 'https://fcm.googleapis.com/fcm/send';
   final client = new http.Client();
   final response = await client.post(
