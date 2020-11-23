@@ -1,0 +1,119 @@
+{
+  "project_info": {
+    "project_number": "676511496089",
+    "firebase_url": "https://gourmet2gogeorge.firebaseio.com",
+    "project_id": "gourmet2gogeorge",
+    "storage_bucket": "gourmet2gogeorge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676511496089:android:aa8e997d021fea77080508",
+        "android_client_info": {
+          "package_name": "com.gourmet2go.customer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbEzRP0NRK63Suy3WspJ1WRsv2wW3mQsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "676511496089-9rg53m6apfdelesu6nfu24qe8qbp2h0v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gourmet2go.owner"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676511496089:android:85c30cd16d25a17f080508",
+        "android_client_info": {
+          "package_name": "com.gourmet2go.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbEzRP0NRK63Suy3WspJ1WRsv2wW3mQsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "676511496089-9rg53m6apfdelesu6nfu24qe8qbp2h0v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gourmet2go.owner"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:676511496089:android:cc672c36f9ee68a5080508",
+        "android_client_info": {
+          "package_name": "com.gourmet2go.owner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbEzRP0NRK63Suy3WspJ1WRsv2wW3mQsA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "676511496089-8e2klde0gh9cdr0eapq6oepb8k60ahnf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "676511496089-9rg53m6apfdelesu6nfu24qe8qbp2h0v.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.gourmet2go.owner"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
