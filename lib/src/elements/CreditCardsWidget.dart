@@ -60,27 +60,31 @@ class CreditCardsWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Image.asset(
-                      'assets/img/visa.png',
-                      height: 22,
-                      width: 70,
-                    ),
-                    ButtonTheme(
-                      padding: EdgeInsets.all(0),
-                      minWidth: 50.0,
-                      height: 10.0,
-                      child: PaymentSettingsDialog(
-                        creditCard: creditCard,
-                        onChanged: () {
-                          onChanged(creditCard);
-                          //setState(() {});
-                        },
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 20, top: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Image.asset(
+                        'assets/img/all-cards.jpg',
+                        height: 22,
+                        width: 140,
                       ),
-                    ),
-                  ],
+                      ButtonTheme(
+                        padding: EdgeInsets.all(0),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        minWidth: 0.0,
+                        height: 10.0,
+                        child: PaymentSettingsDialog(
+                          creditCard: creditCard,
+                          onChanged: () {
+                            onChanged(creditCard);
+                            //setState(() {});
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Text(
                   S.of(context).card_number,

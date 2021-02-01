@@ -10,6 +10,8 @@ class Cuisine {
 
   Cuisine();
 
+  Cuisine.from({this.id, this.name, this.selected});
+
   Cuisine.fromJSON(Map<String, dynamic> jsonMap) {
     try {
       id = jsonMap['id'].toString();

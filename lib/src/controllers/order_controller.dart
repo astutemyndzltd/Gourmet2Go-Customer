@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:Gourmet2Go/src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -6,12 +9,20 @@ import '../models/order.dart';
 import '../repository/order_repository.dart';
 
 class OrderController extends ControllerMVC {
+
   List<Order> orders = <Order>[];
   GlobalKey<ScaffoldState> scaffoldKey;
+  StreamSubscription fmSubscription;
 
   OrderController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
+    fmSubscription = firebaseMessagingStreams.onMessageStream.listen(onReceiveFirebaseMessage);
     listenForOrders();
+  }
+
+  onReceiveFirebaseMessage(Map<String, dynamic> message) {
+    orders = [];
+    listenForOrders(message :'Refreshing orders');
   }
 
   void listenForOrders({String message}) async {
@@ -55,4 +66,11 @@ class OrderController extends ControllerMVC {
     orders.clear();
     listenForOrders(message: S.of(context).order_refreshed_successfuly);
   }
+
+  @override
+  void dispose() {
+    fmSubscription.cancel();
+    super.dispose();
+  }
+
 }

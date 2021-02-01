@@ -1,4 +1,6 @@
+import '../../src/models/route_argument.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../generated/l10n.dart';
 import '../models/address.dart' as model;
@@ -11,12 +13,27 @@ class DeliveryPickupController extends CartController {
   GlobalKey<ScaffoldState> scaffoldKey;
   model.Address deliveryAddress;
   PaymentMethodList list;
+  String radioState = 'now';
 
   DeliveryPickupController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
     super.listenForCarts();
     listenForDeliveryAddress();
-    print(settingRepo.deliveryAddress.value.toMap());
+    //print(settingRepo.deliveryAddress.value.toMap());
+  }
+
+  @override
+  void onLoadingCartDone() {
+    if (settingRepo.orderType == 'Delivery') {
+      if (!getDeliveryMethod().selected) {
+        toggleDelivery();
+      }
+    }
+    if (settingRepo.orderType == 'Pickup') {
+      if (!getPickUpMethod().selected) {
+        if (restaurant.availableForDelivery) togglePickUp();
+      }
+    }
   }
 
   void listenForDeliveryAddress() async {
@@ -66,6 +83,8 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getDeliveryMethod().selected = !getDeliveryMethod().selected;
+      settingRepo.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
+      calculateSubtotal();
     });
   }
 
@@ -77,11 +96,13 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getPickUpMethod().selected = !getPickUpMethod().selected;
+      settingRepo.orderType = getPickUpMethod().selected ? 'Pickup' : null;
+      calculateSubtotal();
     });
   }
 
   PaymentMethod getSelectedMethod() {
-    return list.pickupList.firstWhere((element) => element.selected);
+    return list.pickupList.firstWhere((element) => element.selected, orElse: () => null);
   }
 
   @override

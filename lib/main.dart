@@ -26,8 +26,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  
   @override
-  void initState() {
+  void initState()  {
     settingRepo.initSettings();
     settingRepo.getCurrentLocation();
     userRepo.getCurrentUser();
@@ -41,6 +42,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context, Setting _setting, _) {
           print(CustomTrace(StackTrace.current, message: _setting.toMap().toString()));
           return MaterialApp(
+              navigatorObservers: [settingRepo.routeObserver],
               navigatorKey: settingRepo.navigatorKey,
               title: _setting.appName,
               initialRoute: '/Splash',

@@ -1,3 +1,5 @@
+import '../../src/models/address.dart';
+import '../../src/repository/settings_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -13,19 +15,28 @@ class UserController extends ControllerMVC {
   bool loading = false;
   GlobalKey<FormState> loginFormKey;
   GlobalKey<ScaffoldState> scaffoldKey;
-  FirebaseMessaging _firebaseMessaging;
+  FirebaseMessaging firebaseMessaging;
   OverlayEntry loader;
 
   UserController() {
     loader = Helper.overlayLoader(context);
     loginFormKey = new GlobalKey<FormState>();
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
-    _firebaseMessaging = FirebaseMessaging();
-    _firebaseMessaging.getToken().then((String _deviceToken) {
+    firebaseMessaging = FirebaseMessaging();
+    firebaseMessaging.getToken().then((String _deviceToken) {
       user.deviceToken = _deviceToken;
     }).catchError((e) {
       print('Notification not configured');
     });
+  }
+
+  bool isValidEmail(String email) {
+    var regex = RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$');
+    return regex.hasMatch(email);
+  }
+
+  Future<Address> addAddress(Address address) async {
+    return await repository.addAddress(address);
   }
 
   void login() async {
@@ -33,10 +44,15 @@ class UserController extends ControllerMVC {
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
-      repository.login(user).then((value) {
+      repository.login(user).then((value) async {
         if (value != null && value.apiToken != null) {
-          Navigator.of(scaffoldKey.currentContext)
-              .pushReplacementNamed('/Pages', arguments: 2);
+          if (deliveryAddress.value != null) {
+            var address = await this.addAddress(deliveryAddress.value);
+            await changeLocation(address);
+            deliveryAddress.value = address;
+          }
+
+          Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
         } else {
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
             content: Text(S.of(context).wrong_email_or_password),
@@ -60,8 +76,7 @@ class UserController extends ControllerMVC {
       Overlay.of(context).insert(loader);
       repository.register(user).then((value) {
         if (value != null && value.apiToken != null) {
-          Navigator.of(scaffoldKey.currentContext)
-              .pushReplacementNamed('/Pages', arguments: 2);
+          Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
         } else {
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
             content: Text(S.of(context).wrong_email_or_password),
@@ -79,20 +94,21 @@ class UserController extends ControllerMVC {
   }
 
   void resetPassword() {
+    bool succeeded = false;
+
     FocusScope.of(context).unfocus();
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
       repository.resetPassword(user).then((value) {
         if (value != null && value == true) {
+          succeeded = true;
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
-            content:
-                Text(S.of(context).your_reset_link_has_been_sent_to_your_email),
+            content: Text(S.of(context).your_reset_link_has_been_sent_to_your_email),
             action: SnackBarAction(
               label: S.of(context).login,
               onPressed: () {
-                Navigator.of(scaffoldKey.currentContext)
-                    .pushReplacementNamed('/Login');
+                Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Login');
               },
             ),
             duration: Duration(seconds: 10),
@@ -105,6 +121,11 @@ class UserController extends ControllerMVC {
         }
       }).whenComplete(() {
         Helper.hideLoader(loader);
+        if (!succeeded) {
+          scaffoldKey?.currentState?.showSnackBar(SnackBar(
+            content: Text('Email not registered'),
+          ));
+        }
       });
     }
   }

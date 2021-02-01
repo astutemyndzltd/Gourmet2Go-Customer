@@ -61,4 +61,17 @@ class MapsUtil {
       return null;
     }
   }
+
+  Future<List> getAddress(LatLng location, String apiKey) async {
+    try {
+      var endPoint =
+          'https://maps.googleapis.com/maps/api/geocode/json?latlng=${location?.latitude},${location?.longitude}&language=${setting.value.mobileLanguage.value}&key=$apiKey';
+      var response = jsonDecode((await http.get(endPoint, headers: await LocationUtils.getAppHeaders())).body);
+
+      return [response['results'][0]['formatted_address'], response['results'][0]['place_id']];
+    } catch (e) {
+      print(CustomTrace(StackTrace.current, message: e));
+      return null;
+    }
+  }
 }

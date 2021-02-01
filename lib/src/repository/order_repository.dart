@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:global_configuration/global_configuration.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import '../helpers/helper.dart';
 import '../models/credit_card.dart';
@@ -18,8 +19,7 @@ Future<Stream<Order>> getOrders() async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=id&sortedBy=desc';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=id&sortedBy=desc';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
@@ -35,8 +35,7 @@ Future<Stream<Order>> getOrder(orderId) async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders/$orderId?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;deliveryAddress;payment';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders/$orderId?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;deliveryAddress;payment';
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
 
@@ -51,8 +50,7 @@ Future<Stream<Order>> getRecentOrders() async {
     return new Stream.value(null);
   }
   final String _apiToken = 'api_token=${_user.apiToken}&';
-  final String url =
-      '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=updated_at&sortedBy=desc&limit=3';
+  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?${_apiToken}with=user;foodOrders;foodOrders.food;foodOrders.extras;orderStatus;payment&search=user.id:${_user.id}&searchFields=user.id:=&orderBy=updated_at&sortedBy=desc&limit=3';
 
   final client = new http.Client();
   final streamedRest = await client.send(http.Request('get', Uri.parse(url)));
@@ -78,25 +76,40 @@ Future<Stream<OrderStatus>> getOrderStatus() async {
   });
 }
 
-Future<Order> addOrder(Order order, Payment payment) async {
-  User _user = userRepo.currentUser.value;
-  if (_user.apiToken == null) {
-    return new Order();
+Future<dynamic> addOrder({Order order, Payment payment, double price, String paymentMethodId, String paymentIntentId, String cardBrand}) async {
+
+  var user = userRepo.currentUser.value;
+
+  if (user.apiToken == null) {
+    return null;
   }
-  CreditCard _creditCard = await userRepo.getCreditCard();
-  order.user = _user;
-  order.payment = payment;
-  final String _apiToken = 'api_token=${_user.apiToken}';
-  final String url = '${GlobalConfiguration().getValue('api_base_url')}orders?$_apiToken';
+
+  var creditCard = await userRepo.getCreditCard();
+  order.user = user; order.payment = payment;
+  final apiToken = 'api_token=${user.apiToken}';
+  final url = '${GlobalConfiguration().getValue('api_base_url')}orders?$apiToken';
+
   final client = new http.Client();
-  Map params = order.toMap();
-  params.addAll(_creditCard.toMap());
+  var params = order.toMap();
+  params.addAll(creditCard.toMap());
+
+  var second = new Map<String, dynamic>();
+  second.addAll({'order_amount' : price.toFixed2() });
+  second.addAll({'card_brand' : cardBrand });
+
+  if (paymentMethodId != null) second.addAll({ 'payment_method_id' : paymentMethodId });
+  if (paymentIntentId != null) second.addAll({ 'payment_intent_id' : paymentIntentId });
+
+  params.addAll(second);
+
   final response = await client.post(
     url,
     headers: {HttpHeaders.contentTypeHeader: 'application/json'},
     body: json.encode(params),
   );
-  return Order.fromJSON(json.decode(response.body)['data']);
+
+  return json.decode(response.body);
+
 }
 
 Future<Order> cancelOrder(Order order) async {

@@ -1,5 +1,5 @@
+import 'src/pages/location_choice.dart';
 import 'package:flutter/material.dart';
-
 import 'src/models/route_argument.dart';
 import 'src/pages/cart.dart';
 import 'src/pages/category.dart';
@@ -52,7 +52,10 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => ForgetPasswordWidget());
       case '/Pages':
         return MaterialPageRoute(builder: (_) => PagesWidget(currentTab: args));
-
+      case '/Favorites':
+        return MaterialPageRoute(builder: (_) => FavoritesWidget());
+      case '/LocationChoice':
+        return MaterialPageRoute(builder: (_) => LocationChoiceWidget());
       case '/Chat':
         return MaterialPageRoute(
             builder: (_) => ChatWidget(routeArgument: args as RouteArgument));
@@ -65,8 +68,6 @@ class RouteGenerator {
       case '/Food':
         return MaterialPageRoute(
             builder: (_) => FoodWidget(routeArgument: args as RouteArgument));
-      case '/Favourites':
-        return MaterialPageRoute(builder: (_) => FavoritesWidget());
       case '/Category':
         return MaterialPageRoute(
             builder: (_) =>
@@ -92,14 +93,6 @@ class RouteGenerator {
                 DeliveryPickupWidget(routeArgument: args as RouteArgument));
       case '/Checkout':
         return MaterialPageRoute(builder: (_) => CheckoutWidget());
-      case '/CashOnDelivery':
-        return MaterialPageRoute(
-            builder: (_) => OrderSuccessWidget(
-                routeArgument: RouteArgument(param: 'Cash on Delivery')));
-      case '/PayOnPickup':
-        return MaterialPageRoute(
-            builder: (_) => OrderSuccessWidget(
-                routeArgument: RouteArgument(param: 'Pay on Pickup')));
       case '/PayPal':
         return MaterialPageRoute(
             builder: (_) =>
@@ -111,7 +104,7 @@ class RouteGenerator {
       case '/OrderSuccess':
         return MaterialPageRoute(
             builder: (_) =>
-                OrderSuccessWidget(routeArgument: args as RouteArgument));
+                OrderSuccessWidget(orderDetails: args));
       case '/Languages':
         return MaterialPageRoute(builder: (_) => LanguagesWidget());
       case '/Help':

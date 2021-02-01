@@ -8,7 +8,7 @@ import '../models/route_argument.dart';
 // ignore: must_be_immutable
 class CartItemWidget extends StatefulWidget {
   String heroTag;
-  Cart cart;
+  CartItem cart;
   VoidCallback increment;
   VoidCallback decrement;
   VoidCallback onDismissed;
@@ -79,22 +79,25 @@ class _CartItemWidgetState extends State<CartItemWidget> {
                             style: Theme.of(context).textTheme.subtitle1,
                           ),
                           Wrap(
-                            children: List.generate(widget.cart.extras.length, (index) {
+                            /*children: List.generate(widget.cart.extras.length, (index) {
                               return Text(
                                 widget.cart.extras.elementAt(index).name + ', ',
                                 style: Theme.of(context).textTheme.caption,
                               );
-                            }),
+                            }),*/
+                            children: [
+                              Text(
+                                widget.cart.extras.map((e) => e.name).toList().join(', '),
+                                style: Theme.of(context).textTheme.caption,
+                              )
+                            ],
                           ),
                           Wrap(
                             crossAxisAlignment: WrapCrossAlignment.center,
                             spacing: 5,
                             children: <Widget>[
                               Helper.getPrice(widget.cart.food.price, context, style: Theme.of(context).textTheme.headline4, zeroPlaceholder: 'Free'),
-                              widget.cart.food.discountPrice > 0
-                                  ? Helper.getPrice(widget.cart.food.discountPrice, context,
-                                      style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(decoration: TextDecoration.lineThrough)))
-                                  : SizedBox(height: 0),
+                              widget.cart.food.discountPrice > 0 ? Helper.getPrice(widget.cart.food.discountPrice, context, style: Theme.of(context).textTheme.bodyText1.merge(TextStyle(decoration: TextDecoration.lineThrough))) : SizedBox(height: 0),
                             ],
                           ),
                         ],

@@ -64,13 +64,17 @@ class FoodOrderItemWidget extends StatelessWidget {
                           maxLines: 2,
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
-                        Wrap(
+                        /*Wrap(
                           children: List.generate(foodOrder.extras.length, (index) {
                             return Text(
                               foodOrder.extras.elementAt(index).name + ', ',
                               style: Theme.of(context).textTheme.caption,
                             );
                           }),
+                        )*/
+                        Text(
+                          foodOrder.extras.map((e) => e.name).toList().join(', '),
+                          style: Theme.of(context).textTheme.caption,
                         ),
                         Text(
                           foodOrder.food.restaurant.name,

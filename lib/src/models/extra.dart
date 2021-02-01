@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../helpers/custom_trace.dart';
 import '../models/media.dart';
 
@@ -8,9 +10,20 @@ class Extra {
   double price;
   Media image;
   String description;
-  bool checked;
+  bool _checked;
+
+  StreamController<bool> _controller = new StreamController<bool>();
 
   Extra();
+
+  bool get checked => _checked;
+
+  set checked(bool value) {
+    _checked = value;
+    _controller.sink.add(_checked);
+  }
+
+  Stream<bool> get checkedChange => _controller.stream;
 
   Extra.fromJSON(Map<String, dynamic> jsonMap) {
     try {
@@ -41,6 +54,16 @@ class Extra {
     map["description"] = description;
     return map;
   }
+
+
+  Map toShortMap() {
+    var map = new Map<String, dynamic>();
+    map["id"] = id;
+    map["price"] = price;
+    return map;
+  }
+
+
 
   @override
   bool operator ==(dynamic other) {

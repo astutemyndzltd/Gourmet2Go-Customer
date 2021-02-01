@@ -1,3 +1,7 @@
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
+
+import '../models/restaurant.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -10,14 +14,18 @@ import '../repository/coupon_repository.dart';
 import '../repository/settings_repository.dart';
 import '../repository/user_repository.dart';
 
+
+
 class CartController extends ControllerMVC {
-  List<Cart> carts = <Cart>[];
+
+  List<CartItem> carts = <CartItem>[];
   double taxAmount = 0.0;
   double deliveryFee = 0.0;
   int cartCount = 0;
   double subTotal = 0.0;
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
+  Restaurant restaurant;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -25,8 +33,8 @@ class CartController extends ControllerMVC {
 
   void listenForCarts({String message}) async {
     carts.clear();
-    final Stream<Cart> stream = await getCart();
-    stream.listen((Cart _cart) {
+    final Stream<CartItem> stream = await getCart();
+    stream.listen((CartItem _cart) {
       if (!carts.contains(_cart)) {
         setState(() {
           coupon = _cart.food.applyCoupon(coupon);
@@ -39,15 +47,29 @@ class CartController extends ControllerMVC {
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+
+      if(carts.isEmpty) {
+        orderType = null;
+      }
+
+
+      if (carts.isNotEmpty) {
+        restaurant = carts[0].food.restaurant;
+      }
+
       if (carts.isNotEmpty) {
         calculateSubtotal();
       }
+
       if (message != null) {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(message),
         ));
       }
+
       onLoadingCartDone();
+
+      setState((){});
     });
   }
 
@@ -74,9 +96,12 @@ class CartController extends ControllerMVC {
     listenForCarts(message: S.of(context).carts_refreshed_successfuly);
   }
 
-  void removeFromCart(Cart _cart) async {
+  void removeFromCart(CartItem _cart) async {
     setState(() {
       this.carts.remove(_cart);
+      if(this.carts.isEmpty) {
+        orderType = null;
+      }
     });
     removeCart(_cart).then((value) {
       calculateSubtotal();
@@ -97,9 +122,13 @@ class CartController extends ControllerMVC {
       cartPrice *= cart.quantity;
       subTotal += cartPrice;
     });
-    if (Helper.canDelivery(carts[0].food.restaurant, carts: carts)) {
+
+    /*if (Helper.canDeliver(carts[0].food.restaurant, cartItems: carts)) {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
-    }
+    }*/
+
+    deliveryFee = orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
+
     taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;
     setState(() {});
@@ -122,7 +151,7 @@ class CartController extends ControllerMVC {
     });
   }
 
-  incrementQuantity(Cart cart) {
+  incrementQuantity(CartItem cart) {
     if (cart.quantity <= 99) {
       ++cart.quantity;
       updateCart(cart);
@@ -130,7 +159,7 @@ class CartController extends ControllerMVC {
     }
   }
 
-  decrementQuantity(Cart cart) {
+  decrementQuantity(CartItem cart) {
     if (cart.quantity > 1) {
       --cart.quantity;
       updateCart(cart);
@@ -170,4 +199,5 @@ class CartController extends ControllerMVC {
     }
     return Theme.of(context).focusColor.withOpacity(0.7);
   }
+
 }

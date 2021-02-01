@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../models/user.dart';
+import 'AvatarWidget.dart';
 
 class ProfileAvatarWidget extends StatelessWidget {
   final User user;
@@ -37,22 +38,7 @@ class ProfileAvatarWidget extends StatelessWidget {
 //                  shape: StadiumBorder(),
 //                ),
 //              ),
-                ClipRRect(
-                  borderRadius: BorderRadius.all(Radius.circular(300)),
-                  child: CachedNetworkImage(
-                    height: 135,
-                    width: 135,
-                    fit: BoxFit.cover,
-                    imageUrl: user.image?.url,
-                    placeholder: (context, url) => Image.asset(
-                      'assets/img/loading.gif',
-                      fit: BoxFit.cover,
-                      height: 135,
-                      width: 135,
-                    ),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  ),
-                ),
+                AvatarWidget(dimension: 125, textFontSize: 40),
 //              SizedBox(
 //                width: 50,
 //                height: 50,

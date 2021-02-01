@@ -1,3 +1,5 @@
+import '../../src/helpers/helper.dart';
+import '../../src/repository/user_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_map_location_picker/google_map_location_picker.dart';
@@ -22,6 +24,9 @@ class DeliveryAddressBottomSheetWidget extends StatefulWidget {
 class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBottomSheetWidget> {
   DeliveryAddressesController _con;
 
+  String pickCurrentLocationText = 'Use current location';
+  String pickLocationManuallyText = 'Set your location manually';
+
   _DeliveryAddressBottomSheetWidgetState() : super(DeliveryAddressesController()) {
     _con = controller;
   }
@@ -44,24 +49,36 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
             child: ListView(
               padding: EdgeInsets.only(top: 20, bottom: 15, left: 20, right: 20),
               children: <Widget>[
+                // pick location manually
                 InkWell(
                   onTap: () async {
-                    LocationResult result = await showLocationPicker(
+                    setState(() {
+                      pickLocationManuallyText = 'Setting your location, please wait.....';
+                    });
+
+                    var locationResult = await showLocationPicker(
                       context,
                       setting.value.googleMapsKey,
                       initialCenter: LatLng(deliveryAddress.value?.latitude ?? 0, deliveryAddress.value?.longitude ?? 0),
-                      //automaticallyAnimateToCurrentLocation: true,
-                      //mapStylePath: 'assets/mapStyle.json',
                       myLocationButtonEnabled: true,
-                      //resultCardAlignment: Alignment.bottomCenter,
                     );
-                    _con.addAddress(new Address.fromJSON({
-                      'address': result.address,
-                      'latitude': result.latLng.latitude,
-                      'longitude': result.latLng.longitude,
-                    }));
-                    print("result = $result");
-                    // Navigator.of(widget.scaffoldKey.currentContext).pop();
+
+                    if (locationResult != null) {
+                      var address = new Address.fromJSON({'address': locationResult.address, 'latitude': locationResult.latLng.latitude, 'longitude': locationResult.latLng.longitude, 'place_id': locationResult.placeId});
+
+                      if (currentUser.value.apiToken != null) {
+                        address = await _con.addAddress(address);
+                      }
+
+                      deliveryAddress.value = await changeLocation(address);
+                      deliveryAddress.notifyListeners();
+                    }
+
+                    setState(() {
+                      pickLocationManuallyText = 'Set your location manually';
+                    });
+
+                    Navigator.of(widget.scaffoldKey.currentContext).pop();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -86,7 +103,7 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    S.of(context).add_new_delivery_address,
+                                    pickLocationManuallyText,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: Theme.of(context).textTheme.bodyText2,
@@ -106,9 +123,16 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                   ),
                 ),
                 SizedBox(height: 25),
+                // pick location using GPS
                 InkWell(
                   onTap: () {
+                    setState(() {
+                      pickCurrentLocationText = 'Setting your location, please wait.....';
+                    });
                     _con.changeDeliveryAddressToCurrentLocation().then((value) {
+                      setState(() {
+                        pickCurrentLocationText = 'Use current location';
+                      });
                       Navigator.of(widget.scaffoldKey.currentContext).pop();
                     });
                   },
@@ -135,7 +159,7 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    S.of(context).current_location,
+                                    pickCurrentLocationText,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                     style: Theme.of(context).textTheme.bodyText2,
@@ -154,84 +178,68 @@ class _DeliveryAddressBottomSheetWidgetState extends StateMVC<DeliveryAddressBot
                     ],
                   ),
                 ),
-                ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 25),
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  primary: false,
-                  itemCount: _con.addresses.length,
-                  separatorBuilder: (context, index) {
-                    return SizedBox(height: 25);
-                  },
-                  itemBuilder: (context, index) {
-//                return DeliveryAddressesItemWidget(
-//                  address: _con.addresses.elementAt(index),
-//                  onPressed: (Address _address) {
-//                    _con.chooseDeliveryAddress(_address);
-//                  },
-//                  onLongPress: (Address _address) {
-//                    DeliveryAddressDialog(
-//                      context: context,
-//                      address: _address,
-//                      onChanged: (Address _address) {
-//                        _con.updateAddress(_address);
-//                      },
-//                    );
-//                  },
-//                  onDismissed: (Address _address) {
-//                    _con.removeDeliveryAddress(_address);
-//                  },
-//                );
-                    return InkWell(
-                      onTap: () {
-                        _con.changeDeliveryAddress(_con.addresses.elementAt(index)).then((value) {
-                          Navigator.of(widget.scaffoldKey.currentContext).pop();
-                        });
-                      },
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: <Widget>[
-                          Container(
-                            height: 36,
-                            width: 36,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)), color: Theme.of(context).focusColor),
-                            child: Icon(
-                              Icons.place,
-                              color: Theme.of(context).primaryColor,
-                              size: 22,
+                // locations fetched from api
+                if (currentUser.value.apiToken != null)
+                  ListView.separated(
+                    padding: EdgeInsets.symmetric(vertical: 25),
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    primary: false,
+                    itemCount: _con.addresses.length,
+                    separatorBuilder: (context, index) {
+                      return SizedBox(height: 25);
+                    },
+                    itemBuilder: (context, index) {
+                      return InkWell(
+                        onTap: () {
+                          _con.changeDeliveryAddress(_con.addresses.elementAt(index)).then((value) {
+                            Navigator.of(widget.scaffoldKey.currentContext).pop();
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 36,
+                              width: 36,
+                              decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(5)), color: Theme.of(context).focusColor),
+                              child: Icon(
+                                Icons.place,
+                                color: Theme.of(context).primaryColor,
+                                size: 22,
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 15),
-                          Flexible(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        _con.addresses.elementAt(index).address,
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 3,
-                                        style: Theme.of(context).textTheme.bodyText2,
-                                      ),
-                                    ],
+                            SizedBox(width: 15),
+                            Flexible(
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          _con.addresses.elementAt(index).address,
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 3,
+                                          style: Theme.of(context).textTheme.bodyText2,
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                SizedBox(width: 8),
-                                Icon(
-                                  Icons.keyboard_arrow_right,
-                                  color: Theme.of(context).focusColor,
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  },
-                ),
+                                  SizedBox(width: 8),
+                                  Icon(
+                                    Icons.keyboard_arrow_right,
+                                    color: Theme.of(context).focusColor,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
           ),

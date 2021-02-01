@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../models/address.dart';
@@ -17,13 +18,17 @@ class PayPalController extends ControllerMVC {
   PayPalController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
+
   @override
   void initState() {
     final String _apiToken = 'api_token=${userRepo.currentUser.value.apiToken}';
     final String _userId = 'user_id=${userRepo.currentUser.value.id}';
-    final String _deliveryAddress = 'delivery_address_id=${settingRepo.deliveryAddress.value?.id}';
+    final String _deliveryAddress =
+        'delivery_address_id=${settingRepo.deliveryAddress.value?.id}';
     final String _couponCode = 'coupon_code=${settingRepo.coupon?.code}';
-    url = '${GlobalConfiguration().getValue('base_url')}payments/paypal/express-checkout?$_apiToken&$_userId&$_deliveryAddress&$_couponCode';
+    final String _orderType = 'order_type=${settingRepo.orderType}';
+    url =
+        '${GlobalConfiguration().getValue('base_url')}payments/paypal/express-checkout?$_apiToken&$_userId&$_deliveryAddress&$_couponCode&$_orderType';
     setState(() {});
     super.initState();
   }

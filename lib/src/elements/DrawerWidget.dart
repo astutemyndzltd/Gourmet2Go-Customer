@@ -1,3 +1,4 @@
+import '../../src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -21,9 +22,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
         children: <Widget>[
           GestureDetector(
             onTap: () {
-              currentUser.value.apiToken != null
-                  ? Navigator.of(context).pushNamed('/Profile')
-                  : Navigator.of(context).pushNamed('/Login');
+              currentUser.value.apiToken != null ? Navigator.of(context).pushNamed('/Profile') : Navigator.of(context).pushNamed('/Login');
             },
             child: currentUser.value.apiToken != null
                 ? UserAccountsDrawerHeader(
@@ -38,11 +37,9 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                       currentUser.value.email,
                       style: Theme.of(context).textTheme.caption,
                     ),
-                    currentAccountPicture: CircleAvatar(
-                      backgroundColor: Theme.of(context).accentColor,
-                      backgroundImage:
-                          NetworkImage(currentUser.value.image.thumb),
-                    ),
+                    currentAccountPicture: AvatarWidget(dimension: 0, textFontSize: 30, onTap: () {
+                      currentUser.value.apiToken != null ? Navigator.of(context).pushNamed('/Profile') : Navigator.of(context).pushNamed('/Login');
+                    },),
                   )
                 : Container(
                     padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15),
@@ -65,6 +62,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
                     ),
                   ),
           ),
+          // home
           ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Pages', arguments: 2);
@@ -78,6 +76,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          // notification
           ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Pages', arguments: 0);
@@ -91,6 +90,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          // my orders
           ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Pages', arguments: 3);
@@ -104,9 +104,10 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          // favourite foods
           ListTile(
             onTap: () {
-              Navigator.of(context).pushNamed('/Favourites');
+              Navigator.of(context).pushNamed('/Pages', arguments: 4);
             },
             leading: Icon(
               Icons.favorite,
@@ -117,7 +118,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
-          ListTile(
+          // messages
+          /*ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Pages', arguments: 4);
             },
@@ -129,7 +131,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               S.of(context).messages,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-          ),
+          ),*/
+          // application preference
           ListTile(
             dense: true,
             title: Text(
@@ -141,6 +144,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               color: Theme.of(context).focusColor.withOpacity(0.3),
             ),
           ),
+          // help and support
           ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Help');
@@ -154,6 +158,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          // settings
           ListTile(
             onTap: () {
               if (currentUser.value.apiToken != null) {
@@ -171,7 +176,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
-          ListTile(
+          // languages
+          /*ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Languages');
             },
@@ -183,7 +189,8 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               S.of(context).languages,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-          ),
+          ),*/
+          // dark mode
           ListTile(
             onTap: () {
               if (Theme.of(context).brightness == Brightness.dark) {
@@ -200,19 +207,16 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
             title: Text(
-              Theme.of(context).brightness == Brightness.dark
-                  ? S.of(context).light_mode
-                  : S.of(context).dark_mode,
+              Theme.of(context).brightness == Brightness.dark ? S.of(context).light_mode : S.of(context).dark_mode,
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),
+          // log out
           ListTile(
             onTap: () {
               if (currentUser.value.apiToken != null) {
                 logout().then((value) {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/Pages', (Route<dynamic> route) => false,
-                      arguments: 2);
+                  Navigator.of(context).pushNamedAndRemoveUntil('/Pages', (Route<dynamic> route) => false, arguments: 2);
                 });
               } else {
                 Navigator.of(context).pushNamed('/Login');
@@ -223,9 +227,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               color: Theme.of(context).focusColor.withOpacity(1),
             ),
             title: Text(
-              currentUser.value.apiToken != null
-                  ? S.of(context).log_out
-                  : S.of(context).login,
+              currentUser.value.apiToken != null ? S.of(context).log_out : S.of(context).login,
               style: Theme.of(context).textTheme.subtitle1,
             ),
           ),

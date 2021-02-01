@@ -73,10 +73,11 @@ class _ForgetPasswordWidgetState extends StateMVC<ForgetPasswordWidget> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      //email
                       TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         onSaved: (input) => _con.user.email = input,
-                        validator: (input) => !input.contains('@') ? S.of(context).should_be_a_valid_email : null,
+                        validator: (input) => !_con.isValidEmail(input) ? 'Invalid email' : null,
                         decoration: InputDecoration(
                           labelText: S.of(context).email,
                           labelStyle: TextStyle(color: Theme.of(context).accentColor),

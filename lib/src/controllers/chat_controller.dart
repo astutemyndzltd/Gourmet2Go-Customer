@@ -29,8 +29,7 @@ class ChatController extends ControllerMVC {
 
   createConversation(Conversation _conversation) async {
     _conversation.users.insert(0, currentUser.value);
-    _conversation.lastMessageTime =
-        DateTime.now().toUtc().millisecondsSinceEpoch;
+    _conversation.lastMessageTime = DateTime.now().toUtc().millisecondsSinceEpoch;
     _conversation.readByUsers = [currentUser.value.id];
     setState(() {
       conversation = _conversation;
@@ -41,9 +40,7 @@ class ChatController extends ControllerMVC {
   }
 
   listenForConversations() async {
-    _chatRepository
-        .getUserConversations(currentUser.value.id)
-        .then((snapshots) {
+    _chatRepository.getUserConversations(currentUser.value.id).then((snapshots) {
       setState(() {
         conversations = snapshots;
       });
@@ -61,25 +58,18 @@ class ChatController extends ControllerMVC {
   }
 
   addMessage(Conversation _conversation, String text) {
-    Chat _chat = new Chat(text, DateTime.now().toUtc().millisecondsSinceEpoch,
-        currentUser.value.id);
-
+    Chat _chat = new Chat(text, DateTime.now().toUtc().millisecondsSinceEpoch, currentUser.value.id);
     if (_conversation.id == null) {
       _conversation.id = UniqueKey().toString();
       createConversation(_conversation);
     }
-
     _conversation.lastMessage = text;
     _conversation.lastMessageTime = _chat.time;
     _conversation.readByUsers = [currentUser.value.id];
-
     _chatRepository.addMessage(_conversation, _chat).then((value) {
       _conversation.users.forEach((_user) {
         if (_user.id != currentUser.value.id) {
-          sendNotification(
-              text,
-              S.of(context).newMessageFrom + " " + currentUser.value.name,
-              _user);
+          sendNotification(text, S.of(context).newMessageFrom + " " + currentUser.value.name, _user);
         }
       });
     });

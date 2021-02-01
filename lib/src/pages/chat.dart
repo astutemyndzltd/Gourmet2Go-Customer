@@ -13,14 +13,15 @@ import '../models/conversation.dart';
 import '../models/route_argument.dart';
 
 class ChatWidget extends StatefulWidget {
+
   final RouteArgument routeArgument;
   final GlobalKey<ScaffoldState> parentScaffoldKey;
 
-  ChatWidget({Key key, this.parentScaffoldKey, this.routeArgument})
-      : super(key: key);
+  ChatWidget({Key key, this.parentScaffoldKey, this.routeArgument}) : super(key: key);
 
   @override
   _ChatWidgetState createState() => _ChatWidgetState();
+
 }
 
 class _ChatWidgetState extends StateMVC<ChatWidget> {
@@ -64,10 +65,8 @@ class _ChatWidgetState extends StateMVC<ChatWidget> {
                 primary: true,
                 itemBuilder: (context, index) {
                   print(snapshot.data.documents[index].data());
-                  Chat _chat =
-                      Chat.fromJSON(snapshot.data.documents[index].data());
-                  _chat.user = _con.conversation.users
-                      .firstWhere((_user) => _user.id == _chat.userId);
+                  Chat _chat = Chat.fromJSON(snapshot.data.documents[index].data());
+                  _chat.user = _con.conversation.users.firstWhere((_user) => _user.id == _chat.userId);
                   return ChatMessageListItem(
                     chat: _chat,
                   );
@@ -86,18 +85,13 @@ class _ChatWidgetState extends StateMVC<ChatWidget> {
         elevation: 0,
         centerTitle: true,
         leading: new IconButton(
-            icon:
-                new Icon(Icons.arrow_back, color: Theme.of(context).hintColor),
+            icon: new Icon(Icons.arrow_back, color: Theme.of(context).hintColor),
             onPressed: () {
               if (widget.routeArgument.id == null) {
                 // from conversation page
                 Navigator.of(context).pushNamed('/Pages', arguments: 4);
               } else {
-                Navigator.of(context).pushNamed('/Details',
-                    arguments: RouteArgument(
-                        id: '0',
-                        param: widget.routeArgument.id,
-                        heroTag: 'chat_tab'));
+                Navigator.of(context).pushNamed('/Details', arguments: RouteArgument(id: '0', param: widget.routeArgument.id, heroTag: 'chat_tab'));
               }
             }),
         automaticallyImplyLeading: false,
@@ -105,15 +99,10 @@ class _ChatWidgetState extends StateMVC<ChatWidget> {
           _con.conversation.name,
           overflow: TextOverflow.fade,
           maxLines: 1,
-          style: Theme.of(context)
-              .textTheme
-              .headline6
-              .merge(TextStyle(letterSpacing: 1.3)),
+          style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
         ),
         actions: <Widget>[
-          new ShoppingCartButtonWidget(
-              iconColor: Theme.of(context).hintColor,
-              labelColor: Theme.of(context).accentColor),
+          new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
         ],
       ),
       body: Column(
@@ -125,20 +114,14 @@ class _ChatWidgetState extends StateMVC<ChatWidget> {
           Container(
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor,
-              boxShadow: [
-                BoxShadow(
-                    color: Theme.of(context).hintColor.withOpacity(0.10),
-                    offset: Offset(0, -4),
-                    blurRadius: 10)
-              ],
+              boxShadow: [BoxShadow(color: Theme.of(context).hintColor.withOpacity(0.10), offset: Offset(0, -4), blurRadius: 10)],
             ),
             child: TextField(
               controller: myController,
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(20),
                 hintText: S.of(context).typeToStartChat,
-                hintStyle: TextStyle(
-                    color: Theme.of(context).focusColor.withOpacity(0.8)),
+                hintStyle: TextStyle(color: Theme.of(context).focusColor.withOpacity(0.8)),
                 suffixIcon: IconButton(
                   padding: EdgeInsets.only(right: 30),
                   onPressed: () {
@@ -154,10 +137,8 @@ class _ChatWidgetState extends StateMVC<ChatWidget> {
                   ),
                 ),
                 border: UnderlineInputBorder(borderSide: BorderSide.none),
-                enabledBorder:
-                    UnderlineInputBorder(borderSide: BorderSide.none),
-                focusedBorder:
-                    UnderlineInputBorder(borderSide: BorderSide.none),
+                enabledBorder: UnderlineInputBorder(borderSide: BorderSide.none),
+                focusedBorder: UnderlineInputBorder(borderSide: BorderSide.none),
               ),
             ),
           )

@@ -69,11 +69,21 @@ class _SearchResultWidgetState extends StateMVC<SearchResultWidget> {
               decoration: InputDecoration(
                 contentPadding: EdgeInsets.all(12),
                 hintText: S.of(context).search_for_restaurants_or_foods,
-                hintStyle: Theme.of(context).textTheme.caption.merge(TextStyle(fontSize: 14)),
-                prefixIcon: Icon(Icons.search, color: Theme.of(context).accentColor),
-                border: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1))),
-                focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.3))),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.1))),
+                hintStyle: Theme.of(context)
+                    .textTheme
+                    .caption
+                    .merge(TextStyle(fontSize: 14)),
+                prefixIcon:
+                    Icon(Icons.search, color: Theme.of(context).accentColor),
+                border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).focusColor.withOpacity(0.1))),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).focusColor.withOpacity(0.3))),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Theme.of(context).focusColor.withOpacity(0.1))),
               ),
             ),
           ),
@@ -109,7 +119,8 @@ class _SearchResultWidgetState extends StateMVC<SearchResultWidget> {
                         },
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                        padding:
+                            const EdgeInsets.only(top: 20, left: 20, right: 20),
                         child: ListTile(
                           dense: true,
                           contentPadding: EdgeInsets.symmetric(vertical: 0),
@@ -133,7 +144,9 @@ class _SearchResultWidgetState extends StateMVC<SearchResultWidget> {
                                     heroTag: widget.heroTag,
                                   ));
                             },
-                            child: CardWidget(restaurant: _con.restaurants.elementAt(index), heroTag: widget.heroTag),
+                            child: CardWidget(
+                                restaurant: _con.restaurants.elementAt(index),
+                                heroTag: widget.heroTag),
                           );
                         },
                       ),

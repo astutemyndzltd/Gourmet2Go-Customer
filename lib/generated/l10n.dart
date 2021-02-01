@@ -307,7 +307,7 @@ class S {
   /// `Favorite Foods`
   String get favorite_foods {
     return Intl.message(
-      'Favourite Foods',
+      'Favorite Foods',
       name: 'favorite_foods',
       desc: '',
       args: [],
@@ -427,7 +427,7 @@ class S {
   /// `I forgot password ?`
   String get i_forgot_password {
     return Intl.message(
-      'Forget Password?',
+      'I forgot password ?',
       name: 'i_forgot_password',
       desc: '',
       args: [],
@@ -437,7 +437,7 @@ class S {
   /// `I don't have an account?`
   String get i_dont_have_an_account {
     return Intl.message(
-      'Create Account',
+      'I don\'t have an account?',
       name: 'i_dont_have_an_account',
       desc: '',
       args: [],
@@ -727,7 +727,7 @@ class S {
   /// `Let's Start with register!`
   String get lets_start_with_register {
     return Intl.message(
-      'Register',
+      'Let\'s Start with register!',
       name: 'lets_start_with_register',
       desc: '',
       args: [],
@@ -737,7 +737,7 @@ class S {
   /// `Should be more than 3 letters`
   String get should_be_more_than_3_letters {
     return Intl.message(
-      'Should be more than 3 letters',
+      'Should be more than 6 letters',
       name: 'should_be_more_than_3_letters',
       desc: '',
       args: [],
@@ -877,7 +877,7 @@ class S {
   /// `Let's Start with Login!`
   String get lets_start_with_login {
     return Intl.message(
-      'Login',
+      'Let\'s Start with Login!',
       name: 'lets_start_with_login',
       desc: '',
       args: [],
@@ -887,7 +887,7 @@ class S {
   /// `Should be more than 3 characters`
   String get should_be_more_than_3_characters {
     return Intl.message(
-      'Should be more than 3 characters',
+      'Should be more than 6 characters',
       name: 'should_be_more_than_3_characters',
       desc: '',
       args: [],
@@ -1507,7 +1507,7 @@ class S {
   /// `You must sign-in to access to this section`
   String get you_must_signin_to_access_to_this_section {
     return Intl.message(
-      'You must sign-in to access this section',
+      'You must sign-in to access to this section',
       name: 'you_must_signin_to_access_to_this_section',
       desc: '',
       args: [],

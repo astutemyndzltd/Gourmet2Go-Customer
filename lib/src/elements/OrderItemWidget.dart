@@ -38,150 +38,132 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                     BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
                   ],
                 ),
-                child: Theme(
-                  data: theme,
-                  child: ExpansionTile(
-                    initiallyExpanded: widget.expanded,
-                    title: Column(
-                      children: <Widget>[
-                        Text('${S.of(context).order_id}: #${widget.order.id}'),
-                        Text(
-                          DateFormat('dd-MM-yyyy | HH:mm').format(widget.order.dateTime),
-                          style: Theme.of(context).textTheme.caption,
-                        ),
-                      ],
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                    trailing: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Helper.getPrice(Helper.getTotalOrdersPrice(widget.order), context, style: Theme.of(context).textTheme.headline4),
-                        Text(
-                          '${widget.order.payment.method}',
-                          style: Theme.of(context).textTheme.caption,
-                        )
-                      ],
-                    ),
-                    children: <Widget>[
-                      Column(
-                          children: List.generate(
-                        widget.order.foodOrders.length,
-                        (indexFood) {
-                          return FoodOrderItemWidget(
-                              heroTag: 'mywidget.orders', order: widget.order, foodOrder: widget.order.foodOrders.elementAt(indexFood));
-                        },
-                      )),
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        child: Column(
+                child: Column(
+                  children: [
+                    Theme(
+                      data: theme,
+                      child: ExpansionTile(
+                        initiallyExpanded: widget.expanded,
+                        title: Column(
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    S.of(context).delivery_fee,
-                                    style: Theme.of(context).textTheme.bodyText1,
-                                  ),
-                                ),
-                                Helper.getPrice(widget.order.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    '${S.of(context).tax} (${widget.order.tax}%)',
-                                    style: Theme.of(context).textTheme.bodyText1,
-                                  ),
-                                ),
-                                Helper.getPrice(Helper.getTaxOrder(widget.order), context, style: Theme.of(context).textTheme.subtitle1)
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                Expanded(
-                                  child: Text(
-                                    S.of(context).total,
-                                    style: Theme.of(context).textTheme.bodyText1,
-                                  ),
-                                ),
-                                Helper.getPrice(Helper.getTotalOrdersPrice(widget.order), context, style: Theme.of(context).textTheme.headline4)
-                              ],
+                            Text('${S.of(context).order_id}: #${widget.order.id}'),
+                            Text(
+                              DateFormat('dd-MM-yyyy | HH:mm').format(widget.order.dateTime),
+                              style: Theme.of(context).textTheme.caption,
                             ),
                           ],
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              Container(
-                child: Wrap(
-                  alignment: WrapAlignment.end,
-                  children: <Widget>[
-                    FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/Tracking', arguments: RouteArgument(id: widget.order.id));
-                      },
-                      textColor: Theme.of(context).hintColor,
-                      child: Wrap(
-                        children: <Widget>[Text(S.of(context).view)],
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 0),
-                    ),
-                    if (widget.order.canCancelOrder())
-                      FlatButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              // return object of type Dialog
-                              return AlertDialog(
-                                title: Wrap(
-                                  spacing: 10,
+                        trailing: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Helper.getPrice(Helper.getTotalOrdersPrice(widget.order), context, style: Theme.of(context).textTheme.headline4),
+                            Text(
+                              'Card - ${widget.order.payment.method} | ${widget.order.orderType}${widget.order.preorderInfo != null ? ' | Pre-Order' : ''}',
+                              style: Theme.of(context).textTheme.caption,
+                            )
+                          ],
+                        ),
+                        children: <Widget>[
+                          Column(
+                              children: List.generate(
+                            widget.order.foodOrders.length,
+                            (indexFood) {
+                              return FoodOrderItemWidget(heroTag: 'mywidget.orders', order: widget.order, foodOrder: widget.order.foodOrders.elementAt(indexFood));
+                            },
+                          )),
+                          Padding(
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                            child: Column(
+                              children: <Widget>[
+                                Row(
                                   children: <Widget>[
-                                    Icon(Icons.report, color: Colors.orange),
-                                    Text(
-                                      S.of(context).confirmation,
-                                      style: TextStyle(color: Colors.orange),
+                                    Expanded(
+                                      child: Text(
+                                        S.of(context).delivery_fee,
+                                        style: Theme.of(context).textTheme.bodyText1,
+                                      ),
                                     ),
+                                    Helper.getPrice(widget.order.deliveryFee, context, style: Theme.of(context).textTheme.subtitle1)
                                   ],
                                 ),
-                                content: Text(S.of(context).areYouSureYouWantToCancelThisOrder),
-                                contentPadding: EdgeInsets.symmetric(horizontal: 30, vertical: 25),
-                                actions: <Widget>[
-                                  FlatButton(
-                                    child: new Text(
-                                      S.of(context).yes,
-                                      style: TextStyle(color: Theme.of(context).hintColor),
+                                /*Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Text(
+                                        'Tax (${widget.order.tax}%)',
+                                        style: Theme.of(context).textTheme.bodyText1,
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      widget.onCanceled(widget.order);
-                                      Navigator.of(context).pop();
-                                    },
-                                  ),
-                                  FlatButton(
-                                    child: new Text(
-                                      S.of(context).close,
-                                      style: TextStyle(color: Colors.orange),
+                                    Helper.getPrice(Helper.getTaxOrder(widget.order), context, style: Theme.of(context).textTheme.subtitle1)
+                                  ],
+                                ),*/
+                                Row(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Text(
+                                        S.of(context).total,
+                                        style: Theme.of(context).textTheme.bodyText1,
+                                      ),
                                     ),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
+                                    Helper.getPrice(Helper.getTotalOrdersPrice(widget.order), context, style: Theme.of(context).textTheme.headline4)
+                                  ],
+                                ),
+                                Row(children: <Widget>[
+                                  Container(
+                                    child: Text(
+                                      'Note',
+                                      style: Theme.of(context).textTheme.bodyText1,
+                                    ),
+                                    width: 60,
                                   ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                        textColor: Theme.of(context).hintColor,
-                        child: Wrap(
-                          children: <Widget>[Text(S.of(context).cancel + " ")],
-                        ),
-                        padding: EdgeInsets.symmetric(horizontal: 10),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        widget.order.note,
+                                        style: Theme.of(context).textTheme.bodyText2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  )
+                                ]),
+                              ],
+                            ),
+                          )
+                        ],
                       ),
+                    ),
+                    // View Button
+                    Container(
+                      //color: Colors.green,
+                      width: double.infinity,
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 16, bottom: 15, top: 15),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.of(context).pushNamed('/Tracking', arguments: RouteArgument(id: widget.order.id));
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(5)),
+                                color: Theme.of(context).accentColor,
+                              ),
+                              child: Text(
+                                'View Details',
+                                //S.of(context).pickup,
+                                style: TextStyle(color: Theme.of(context).primaryColor ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -193,8 +175,7 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
           padding: EdgeInsets.symmetric(horizontal: 10),
           height: 28,
           width: 140,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(100)), color: widget.order.active ? Theme.of(context).accentColor : Colors.redAccent),
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(100)), color: widget.order.active ? Theme.of(context).accentColor : Colors.redAccent),
           alignment: AlignmentDirectional.center,
           child: Text(
             widget.order.active ? '${widget.order.orderStatus.status}' : S.of(context).canceled,

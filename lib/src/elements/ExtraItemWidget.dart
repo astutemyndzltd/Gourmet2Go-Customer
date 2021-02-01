@@ -5,7 +5,7 @@ import '../models/extra.dart';
 
 class ExtraItemWidget extends StatefulWidget {
   final Extra extra;
-  final VoidCallback onChanged;
+  final void Function(Extra) onChanged;
 
   ExtraItemWidget({
     Key key,
@@ -50,6 +50,13 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget> with SingleTickerProv
       ..addListener(() {
         setState(() {});
       });
+
+    /*** added by Anik Banerjee ***/
+    widget.extra.checkedChange.listen((checked) {
+      if (checked) animationController.forward();
+      else animationController.reverse();
+    });
+
   }
 
   @override
@@ -62,13 +69,8 @@ class _ExtraItemWidgetState extends State<ExtraItemWidget> with SingleTickerProv
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        if (widget.extra.checked) {
-          animationController.reverse();
-        } else {
-          animationController.forward();
-        }
         widget.extra.checked = !widget.extra.checked;
-        widget.onChanged();
+        widget.onChanged(widget.extra);
       },
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,

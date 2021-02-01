@@ -1,3 +1,9 @@
+import 'dart:async';
+
+import '../../src/models/dispatchmethod.dart';
+
+import '../models/cuisine.dart';
+import '../repository/cuisine_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -10,24 +16,152 @@ import '../models/slide.dart';
 import '../repository/category_repository.dart';
 import '../repository/food_repository.dart';
 import '../repository/restaurant_repository.dart';
-import '../repository/settings_repository.dart';
+import '../repository/settings_repository.dart' as settingsRepo;
 import '../repository/slider_repository.dart';
 
 class HomeController extends ControllerMVC {
+  OverlayEntry overlayLoader;
+
   List<Category> categories = <Category>[];
   List<Slide> slides = <Slide>[];
-  List<Restaurant> topRestaurants = <Restaurant>[];
+  List<Restaurant> showableRestaurants = null;
   List<Restaurant> popularRestaurants = <Restaurant>[];
   List<Review> recentReviews = <Review>[];
   List<Food> trendingFoods = <Food>[];
+  List<Cuisine> cuisines = <Cuisine>[];
+  List<Restaurant> nearbyRestaurants = null;
+  List<Restaurant> popularRestaurantsNearby = <Restaurant>[];
+
+  bool listeningForNearbyRestaurants = false;
+  bool listeningForPopularRestaurants = false;
 
   HomeController() {
-    listenForTopRestaurants();
-    listenForSlides();
-    listenForTrendingFoods();
-    listenForCategories();
-    listenForPopularRestaurants();
-    listenForRecentReviews();
+    loadData();
+  }
+
+  loadData() {
+    bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
+
+    VoidCallback refreshState = () {
+      bool allDone = f1Done && f2Done && f3Done && f4Done;
+
+      if (allDone) {
+        overlayLoader.remove();
+        setState(() {});
+      }
+
+    };
+
+    var future1 = listenForNearbyRestaurants();
+    var future2 = listenForCuisines();
+    var future3 = listenForPopularRestaurants();
+    var future4 = listenForRecentReviews();
+
+    future1.whenComplete(() {
+      f1Done = true;
+      refreshState();
+    });
+    future2.whenComplete(() {
+      f2Done = true;
+      refreshState();
+    });
+    future3.whenComplete(() {
+      f3Done = true;
+      refreshState();
+    });
+    future4.whenComplete(() {
+      f4Done = true;
+      refreshState();
+    });
+  }
+
+  Future<void> refreshHome() async {
+    bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
+
+    overlayLoader = Helper.overlayLoader(context);
+    Overlay.of(context).insert(overlayLoader);
+
+    VoidCallback removeLoader = () {
+      bool allDone = f1Done && f2Done && f3Done && f4Done;
+
+      if (allDone) {
+        overlayLoader.remove();
+        setState(() {});
+      }
+    };
+
+    var future1 = listenForNearbyRestaurants();
+    var future2 = listenForCuisines();
+    var future3 = listenForPopularRestaurants();
+    var future4 = listenForRecentReviews();
+
+    future1.whenComplete(() {
+      f1Done = true;
+      removeLoader();
+    });
+
+    future2.whenComplete(() {
+      f2Done = true;
+      removeLoader();
+    });
+
+    future3.whenComplete(() {
+      f3Done = true;
+      removeLoader();
+    });
+
+    future4.whenComplete(() {
+      f4Done = true;
+      removeLoader();
+    });
+
+  }
+
+  Future<void> listenForNearbyRestaurants() async {
+    listeningForNearbyRestaurants = true;
+    nearbyRestaurants = await getNearbyRestaurants();
+    showableRestaurants = [];
+
+    for (var restaurant in nearbyRestaurants) {
+      if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
+      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
+      showableRestaurants.add(restaurant);
+    }
+
+    listeningForNearbyRestaurants = false;
+
+    if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
+  }
+
+  Future<void> listenForCuisines() async {
+    cuisines = await getCuisinesNew();
+  }
+
+  Future<void> listenForPopularRestaurants() async {
+    listeningForPopularRestaurants = true;
+    popularRestaurants = await getNearbyPopularRestaurants();
+    listeningForPopularRestaurants = false;
+    if (!listeningForNearbyRestaurants && !listeningForPopularRestaurants) loadPopularRestaurants();
+  }
+
+  void loadPopularRestaurants() {
+    popularRestaurantsNearby.clear();
+    var map = Map<String, Restaurant>();
+    nearbyRestaurants.forEach((r) => map[r.id] = r);
+
+    for (var p in popularRestaurants) {
+      if (map[p.id] != null) {
+        popularRestaurantsNearby.add(p);
+      }
+    }
+  }
+
+  Future<void> listenForRecentReviews() async {
+    final Stream<Review> stream = await getRecentReviews();
+    recentReviews.clear();
+    stream.listen((r) => recentReviews.add(r));
   }
 
   Future<void> listenForSlides() async {
@@ -49,28 +183,14 @@ class HomeController extends ControllerMVC {
   }
 
   Future<void> listenForTopRestaurants() async {
-    final Stream<Restaurant> stream = await getNearRestaurants(deliveryAddress.value, deliveryAddress.value);
+    final Stream<Restaurant> stream = await getNearRestaurants(settingsRepo.deliveryAddress.value, settingsRepo.deliveryAddress.value);
     stream.listen((Restaurant _restaurant) {
-      setState(() => topRestaurants.add(_restaurant));
-    }, onError: (a) {}, onDone: () {});
-  }
-
-  Future<void> listenForPopularRestaurants() async {
-    final Stream<Restaurant> stream = await getPopularRestaurants(deliveryAddress.value);
-    stream.listen((Restaurant _restaurant) {
-      setState(() => popularRestaurants.add(_restaurant));
-    }, onError: (a) {}, onDone: () {});
-  }
-
-  Future<void> listenForRecentReviews() async {
-    final Stream<Review> stream = await getRecentReviews();
-    stream.listen((Review _review) {
-      setState(() => recentReviews.add(_review));
+      setState(() => showableRestaurants.add(_restaurant));
     }, onError: (a) {}, onDone: () {});
   }
 
   Future<void> listenForTrendingFoods() async {
-    final Stream<Food> stream = await getTrendingFoods(deliveryAddress.value);
+    final Stream<Food> stream = await getTrendingFoods(settingsRepo.deliveryAddress.value);
     stream.listen((Food _food) {
       setState(() => trendingFoods.add(_food));
     }, onError: (a) {
@@ -81,8 +201,8 @@ class HomeController extends ControllerMVC {
   void requestForCurrentLocation(BuildContext context) {
     OverlayEntry loader = Helper.overlayLoader(context);
     Overlay.of(context).insert(loader);
-    setCurrentLocation().then((_address) async {
-      deliveryAddress.value = _address;
+    settingsRepo.setCurrentLocation().then((_address) async {
+      settingsRepo.deliveryAddress.value = _address;
       await refreshHome();
       loader.remove();
     }).catchError((e) {
@@ -90,20 +210,4 @@ class HomeController extends ControllerMVC {
     });
   }
 
-  Future<void> refreshHome() async {
-    setState(() {
-      slides = <Slide>[];
-      categories = <Category>[];
-      topRestaurants = <Restaurant>[];
-      popularRestaurants = <Restaurant>[];
-      recentReviews = <Review>[];
-      trendingFoods = <Food>[];
-    });
-    await listenForSlides();
-    await listenForTopRestaurants();
-    await listenForTrendingFoods();
-    await listenForCategories();
-    await listenForPopularRestaurants();
-    await listenForRecentReviews();
-  }
 }

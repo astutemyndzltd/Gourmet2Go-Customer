@@ -10,6 +10,7 @@ class Address {
   double longitude;
   bool isDefault;
   String userId;
+  String placeId;
 
   Address();
 
@@ -21,6 +22,7 @@ class Address {
       latitude = jsonMap['latitude'] != null ? jsonMap['latitude'].toDouble() : null;
       longitude = jsonMap['longitude'] != null ? jsonMap['longitude'].toDouble() : null;
       isDefault = jsonMap['is_default'] ?? false;
+      placeId = jsonMap['place_id']?.toString();
     } catch (e) {
       print(CustomTrace(StackTrace.current, message: e));
     }
@@ -28,6 +30,10 @@ class Address {
 
   bool isUnknown() {
     return latitude == null || longitude == null || id == null || id == 'null';
+  }
+
+  bool isValid() {
+    return latitude != null && longitude != null && placeId != null;//&& latitude > 0.0 && longitude > 0.0;
   }
 
   Map toMap() {
@@ -39,6 +45,7 @@ class Address {
     map["longitude"] = longitude;
     map["is_default"] = isDefault;
     map["user_id"] = userId;
+    map["place_id"] = placeId;
     return map;
   }
 

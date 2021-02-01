@@ -20,8 +20,8 @@ Future<Stream<Food>> getTrendingFoods(Address address) async {
   Map<String, dynamic> _queryParams = {};
   SharedPreferences prefs = await SharedPreferences.getInstance();
   Filter filter = Filter.fromJSON(json.decode(prefs.getString('filter') ?? '{}'));
-  filter.delivery = false;
-  filter.open = false;
+  //filter.delivery = false;
+  //filter.open = false;
   _queryParams['limit'] = '6';
   _queryParams['trending'] = 'week';
   if (!address.isUnknown()) {
@@ -95,7 +95,7 @@ Future<Stream<Food>> getFoodsByCategory(categoryId) async {
   _queryParams['search'] = 'category_id:$categoryId';
   _queryParams['searchFields'] = 'category_id:=';
 
-  _queryParams = filter.toQuery(oldQuery: _queryParams);
+  //_queryParams = filter.toQuery(oldQuery: _queryParams);
   uri = uri.replace(queryParameters: _queryParams);
   try {
     final client = new http.Client();

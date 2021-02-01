@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import '../../generated/l10n.dart';
 import '../models/credit_card.dart';
 
@@ -42,26 +42,30 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
                     key: _paymentSettingsFormKey,
                     child: Column(
                       children: <Widget>[
-                        new TextFormField(
+                        // card number
+                        TextFormField(
                           style: TextStyle(color: Theme.of(context).hintColor),
                           keyboardType: TextInputType.number,
                           decoration: getInputDecoration(hintText: '4242 4242 4242 4242', labelText: S.of(context).number),
                           initialValue: widget.creditCard.number.isNotEmpty ? widget.creditCard.number : null,
-                          validator: (input) => input.trim().length != 16 ? S.of(context).not_a_valid_number : null,
+                          validator: (input) => input.trim().length < 13 ? S.of(context).not_a_valid_number : null,
                           onSaved: (input) => widget.creditCard.number = input,
                         ),
-                        new TextFormField(
+                        // expiry date
+                        TextFormField(
+                            enableInteractiveSelection: false,
                             style: TextStyle(color: Theme.of(context).hintColor),
-                            keyboardType: TextInputType.text,
+                            keyboardType: TextInputType.number,
                             decoration: getInputDecoration(hintText: 'mm/yy', labelText: S.of(context).exp_date),
                             initialValue: widget.creditCard.expMonth.isNotEmpty ? widget.creditCard.expMonth + '/' + widget.creditCard.expYear : null,
-                            // TODO validate date
                             validator: (input) => !input.contains('/') || input.length != 5 ? S.of(context).not_a_valid_date : null,
+                            inputFormatters: [CardExpiryDateTextInputFormatter()],
                             onSaved: (input) {
                               widget.creditCard.expMonth = input.split('/').elementAt(0);
                               widget.creditCard.expYear = input.split('/').elementAt(1);
                             }),
-                        new TextFormField(
+                        // cvc
+                        TextFormField(
                           style: TextStyle(color: Theme.of(context).hintColor),
                           keyboardType: TextInputType.number,
                           decoration: getInputDecoration(hintText: '253', labelText: S.of(context).cvc),
@@ -97,7 +101,7 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
             });
       },
       child: Text(
-        S.of(context).edit,
+        'Edit',
         style: Theme.of(context).textTheme.bodyText2,
       ),
     );
@@ -125,5 +129,22 @@ class _PaymentSettingsDialogState extends State<PaymentSettingsDialog> {
       widget.onChanged();
       Navigator.pop(context);
     }
+  }
+}
+
+class CardExpiryDateTextInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+    if (oldValue.text.length == 1 && newValue.text.length == 2) {
+      return TextEditingValue(text: newValue.text + '/', selection: TextSelection.collapsed(offset: newValue.selection.end + 1));
+    }
+
+    if (oldValue.text.length == 3 && newValue.text.length == 2) {
+      return TextEditingValue(text: newValue.text.substring(0, 1), selection: TextSelection.collapsed(offset: newValue.selection.end - 1));
+    }
+
+    if (newValue.text.length > 5) return oldValue;
+
+    return newValue;
   }
 }

@@ -29,13 +29,16 @@ class _MapWidgetState extends StateMVC<MapWidget> {
   @override
   void initState() {
     _con.currentRestaurant = widget.routeArgument?.param as Restaurant;
+
     if (_con.currentRestaurant?.latitude != null) {
-      // user select a restaurant
+      // user has selected a restaurant
       _con.getRestaurantLocation();
       _con.getDirectionSteps();
     } else {
       _con.getCurrentLocation();
+      _con.onRestaurantFetchCompleted = _con.showNearbyRestaurantsRoutes;
     }
+
     super.initState();
   }
 
@@ -69,7 +72,7 @@ class _MapWidgetState extends StateMVC<MapWidget> {
               _con.goCurrentLocation();
             },
           ),
-          IconButton(
+          /*IconButton(
             icon: Icon(
               Icons.filter_list,
               color: Theme.of(context).hintColor,
@@ -77,7 +80,7 @@ class _MapWidgetState extends StateMVC<MapWidget> {
             onPressed: () {
               widget.parentScaffoldKey.currentState.openEndDrawer();
             },
-          ),
+          ),*/
         ],
       ),
       body: Stack(
@@ -102,10 +105,10 @@ class _MapWidgetState extends StateMVC<MapWidget> {
                   },
                   polylines: _con.polylines,
                 ),
-          CardsCarouselWidget(
+          /*CardsCarouselWidget(
             restaurantsList: _con.topRestaurants,
             heroTag: 'map_restaurants',
-          ),
+          ),*/
         ],
       ),
     );

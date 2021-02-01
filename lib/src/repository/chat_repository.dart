@@ -27,8 +27,7 @@ class ChatRepository {
 
   Future signUpWithEmailAndPassword(String email, String password) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       if (result.user != null) {
         return true;
       } else {
@@ -50,38 +49,24 @@ class ChatRepository {
   }
 
   Future<void> addUserInfo(userData) async {
-    FirebaseFirestore.instance
-        .collection("users")
-        .add(userData)
-        .catchError((e) {
+    FirebaseFirestore.instance.collection("users").add(userData).catchError((e) {
       print(e.toString());
     });
   }
 
   getUserInfo(String token) async {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .where("token", isEqualTo: token)
-        .get()
-        .catchError((e) {
+    return FirebaseFirestore.instance.collection("users").where("token", isEqualTo: token).get().catchError((e) {
       print(e.toString());
     });
   }
 
   searchByName(String searchField) {
-    return FirebaseFirestore.instance
-        .collection("users")
-        .where('userName', isEqualTo: searchField)
-        .get();
+    return FirebaseFirestore.instance.collection("users").where('userName', isEqualTo: searchField).get();
   }
 
   // Create Conversation
   Future<void> createConversation(Conversation conversation) {
-    return FirebaseFirestore.instance
-        .collection("conversations")
-        .doc(conversation.id)
-        .set(conversation.toMap())
-        .catchError((e) {
+    return FirebaseFirestore.instance.collection("conversations").doc(conversation.id).set(conversation.toMap()).catchError((e) {
       print(e);
     });
   }
@@ -95,9 +80,7 @@ class ChatRepository {
   }
 
   Future<Stream<QuerySnapshot>> getChats(Conversation conversation) async {
-    return updateConversation(
-            conversation.id, {'read_by_users': conversation.readByUsers})
-        .then((value) async {
+    return updateConversation(conversation.id, {'read_by_users': conversation.readByUsers}).then((value) async {
       return await FirebaseFirestore.instance
           .collection("conversations")
           .doc(conversation.id)
@@ -108,25 +91,15 @@ class ChatRepository {
   }
 
   Future<void> addMessage(Conversation conversation, Chat chat) {
-    return FirebaseFirestore.instance
-        .collection("conversations")
-        .doc(conversation.id)
-        .collection("chats")
-        .add(chat.toMap())
-        .whenComplete(() {
+    return FirebaseFirestore.instance.collection("conversations").doc(conversation.id).collection("chats").add(chat.toMap()).whenComplete(() {
       updateConversation(conversation.id, conversation.toUpdatedMap());
     }).catchError((e) {
       print(e.toString());
     });
   }
 
-  Future<void> updateConversation(
-      String conversationId, Map<String, dynamic> conversation) {
-    return FirebaseFirestore.instance
-        .collection("conversations")
-        .doc(conversationId)
-        .update(conversation)
-        .catchError((e) {
+  Future<void> updateConversation(String conversationId, Map<String, dynamic> conversation) {
+    return FirebaseFirestore.instance.collection("conversations").doc(conversationId).update(conversation).catchError((e) {
       print(e.toString());
     });
   }

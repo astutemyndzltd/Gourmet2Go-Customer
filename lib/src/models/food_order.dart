@@ -3,6 +3,7 @@ import '../models/extra.dart';
 import '../models/food.dart';
 
 class FoodOrder {
+
   String id;
   double price;
   double quantity;
@@ -36,7 +37,8 @@ class FoodOrder {
     map["price"] = price;
     map["quantity"] = quantity;
     map["food_id"] = food.id;
-    map["extras"] = extras.map((element) => element.id).toList();
+    map["extras"] = extras.map((element) => element.toShortMap()).toList();
     return map;
   }
+
 }

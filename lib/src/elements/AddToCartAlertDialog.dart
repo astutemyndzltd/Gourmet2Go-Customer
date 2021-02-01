@@ -28,9 +28,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
             child: Text(
-              S
-                  .of(context)
-                  .you_must_add_foods_of_the_same_restaurants_choose_one,
+              S.of(context).you_must_add_foods_of_the_same_restaurants_choose_one,
               style: Theme.of(context).textTheme.caption,
             ),
           ),
@@ -47,10 +45,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.9),
                 boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).focusColor.withOpacity(0.15),
-                      blurRadius: 5,
-                      offset: Offset(0, 2)),
+                  BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, 2)),
                 ],
               ),
               child: Row(
@@ -63,10 +58,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                       width: 60,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(5)),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                this.newFood?.restaurant?.image?.thumb),
-                            fit: BoxFit.cover),
+                        image: DecorationImage(image: NetworkImage(this.newFood?.restaurant?.image?.thumb), fit: BoxFit.cover),
                       ),
                     ),
                   ),
@@ -87,9 +79,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                               ),
                               SizedBox(height: 8),
                               Text(
-                                S
-                                    .of(context)
-                                    .reset_your_cart_and_order_meals_form_this_restaurant,
+                                S.of(context).reset_your_cart_and_order_meals_form_this_restaurant,
                                 style: Theme.of(context).textTheme.caption,
                               ),
                             ],
@@ -115,10 +105,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.9),
                 boxShadow: [
-                  BoxShadow(
-                      color: Theme.of(context).focusColor.withOpacity(0.15),
-                      blurRadius: 5,
-                      offset: Offset(0, 2)),
+                  BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.15), blurRadius: 5, offset: Offset(0, 2)),
                 ],
               ),
               child: Row(
@@ -131,10 +118,7 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                       width: 60,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(5)),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                this.oldFood.restaurant.image.thumb),
-                            fit: BoxFit.cover),
+                        image: DecorationImage(image: NetworkImage(this.oldFood.restaurant.image.thumb), fit: BoxFit.cover),
                       ),
                     ),
                   ),
@@ -148,16 +132,14 @@ class AddToCartAlertDialogWidget extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                this.oldFood.restaurant.name ?? '',
+                                this.oldFood.restaurant.name,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: Theme.of(context).textTheme.subtitle1,
                               ),
                               SizedBox(height: 8),
                               Text(
-                                S
-                                    .of(context)
-                                    .keep_your_old_meals_of_this_restaurant,
+                                S.of(context).keep_your_old_meals_of_this_restaurant,
                                 style: Theme.of(context).textTheme.caption,
                               ),
                             ],

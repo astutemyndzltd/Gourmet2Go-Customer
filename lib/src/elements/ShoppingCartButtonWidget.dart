@@ -1,3 +1,4 @@
+import '../../src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -19,7 +20,7 @@ class ShoppingCartButtonWidget extends StatefulWidget {
   _ShoppingCartButtonWidgetState createState() => _ShoppingCartButtonWidgetState();
 }
 
-class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> {
+class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> with RouteAware {
   CartController _con;
 
   _ShoppingCartButtonWidgetState() : super(CartController()) {
@@ -30,6 +31,12 @@ class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> 
   void initState() {
     _con.listenForCartsCount();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
   }
 
   @override
@@ -67,4 +74,10 @@ class _ShoppingCartButtonWidgetState extends StateMVC<ShoppingCartButtonWidget> 
       color: Colors.transparent,
     );
   }
+
+  @override
+  void didPopNext() {
+    _con.listenForCartsCount();
+  }
+
 }

@@ -6,8 +6,9 @@ import '../models/payment_method.dart';
 class PickUpMethodItem extends StatefulWidget {
   PaymentMethod paymentMethod;
   ValueChanged<PaymentMethod> onPressed;
+  bool checkedFromStart;
 
-  PickUpMethodItem({Key key, this.paymentMethod, this.onPressed}) : super(key: key);
+  PickUpMethodItem({Key key, this.paymentMethod, this.onPressed, this.checkedFromStart}) : super(key: key);
 
   @override
   _PickUpMethodItemState createState() => _PickUpMethodItemState();
@@ -17,20 +18,33 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
   String heroTag;
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((ts) {
+      if(widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
+    });
+
+  }
+
+  @override
   Widget build(BuildContext context) {
     return InkWell(
       splashColor: Theme.of(context).accentColor,
       focusColor: Theme.of(context).accentColor,
       highlightColor: Theme.of(context).primaryColor,
       onTap: () {
-        this.widget.onPressed(widget.paymentMethod);
+        if(!widget.checkedFromStart) this.widget.onPressed(widget.paymentMethod);
       },
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
         decoration: BoxDecoration(
           color: Theme.of(context).primaryColor.withOpacity(0.9),
           boxShadow: [
-            BoxShadow(color: Theme.of(context).focusColor.withOpacity(0.1), blurRadius: 5, offset: Offset(0, 2)),
+            BoxShadow(
+                color: Theme.of(context).focusColor.withOpacity(0.1),
+                blurRadius: 5,
+                offset: Offset(0, 2)),
           ],
         ),
         child: Row(
@@ -44,7 +58,9 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                   width: 60,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    image: DecorationImage(image: AssetImage(widget.paymentMethod.logo), fit: BoxFit.fill),
+                    image: DecorationImage(
+                        image: AssetImage(widget.paymentMethod.logo),
+                        fit: BoxFit.fill),
                   ),
                 ),
                 Container(
@@ -52,12 +68,15 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                   width: widget.paymentMethod.selected ? 60 : 0,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(8)),
-                    color: Theme.of(context).accentColor.withOpacity(this.widget.paymentMethod.selected ? 0.74 : 0),
+                    color: Theme.of(context).accentColor.withOpacity(
+                        this.widget.paymentMethod.selected ? 0.74 : 0),
                   ),
                   child: Icon(
                     Icons.check,
                     size: this.widget.paymentMethod.selected ? 44 : 0,
-                    color: Theme.of(context).primaryColor.withOpacity(widget.paymentMethod.selected ? 0.9 : 0),
+                    color: Theme.of(context)
+                        .primaryColor
+                        .withOpacity(widget.paymentMethod.selected ? 0.9 : 0),
                   ),
                 ),
               ],
@@ -72,17 +91,18 @@ class _PickUpMethodItemState extends State<PickUpMethodItem> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          widget.paymentMethod.name,
+                          'Click to select pickup',
+                          //widget.paymentMethod.name,
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: Theme.of(context).textTheme.subtitle1,
                         ),
-                        Text(
+                        /*Text(
                           widget.paymentMethod.description,
                           overflow: TextOverflow.fade,
                           softWrap: false,
                           style: Theme.of(context).textTheme.caption,
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

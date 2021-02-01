@@ -29,6 +29,7 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
       child: SafeArea(
         child: Column(
           children: <Widget>[
+            // filter heading
             Padding(
               padding: const EdgeInsets.only(left: 20),
               child: Row(
@@ -47,12 +48,14 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                 ],
               ),
             ),
+            // all filters
             Expanded(
               child: ListView(
                 primary: true,
                 shrinkWrap: true,
                 children: <Widget>[
-                  ExpansionTile(
+                  // delivery or pickup
+                  /*ExpansionTile(
                     title: Text(S.of(context).delivery_or_pickup),
                     children: [
                       CheckboxListTile(
@@ -87,8 +90,9 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                       ),
                     ],
                     initiallyExpanded: true,
-                  ),
-                  ExpansionTile(
+                  )*/
+                  // opened restaurants
+                  /*ExpansionTile(
                     title: Text(S.of(context).opened_restaurants),
                     children: [
                       CheckboxListTile(
@@ -108,7 +112,8 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                       ),
                     ],
                     initiallyExpanded: true,
-                  ),
+                  ),*/
+                  // cuisines
                   _con.cuisines.isEmpty
                       ? CircularLoadingWidget(height: 100)
                       : ExpansionTile(
@@ -130,10 +135,33 @@ class _FilterWidgetState extends StateMVC<FilterWidget> {
                           }),
                           initiallyExpanded: true,
                         ),
+                  // food categories
+                  _con.foodCategories.isEmpty
+                      ? CircularLoadingWidget(height: 100)
+                      : ExpansionTile(
+                          title: Text('Food Categories'),
+                          children: List.generate(_con.foodCategories.length, (index) {
+                            return CheckboxListTile(
+                              controlAffinity: ListTileControlAffinity.trailing,
+                              value: _con.foodCategories.elementAt(index).selected,
+                              onChanged: (value) {
+                                _con.onChangeFoodCategoriesFilter(index);
+                              },
+                              title: Text(
+                                _con.foodCategories.elementAt(index).name,
+                                overflow: TextOverflow.fade,
+                                softWrap: false,
+                                maxLines: 1,
+                              ),
+                            );
+                          }),
+                          initiallyExpanded: true,
+                        ),
                 ],
               ),
             ),
             SizedBox(height: 15),
+            //apply filters
             FlatButton(
               onPressed: () {
                 _con.saveFilter().whenComplete(() {

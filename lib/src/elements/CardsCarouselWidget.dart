@@ -24,7 +24,7 @@ class _CardsCarouselWidgetState extends State<CardsCarouselWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.restaurantsList.isEmpty
+    return widget.restaurantsList == null
         ? CardsCarouselLoaderWidget()
         : Container(
             height: 288,
@@ -41,7 +41,11 @@ class _CardsCarouselWidgetState extends State<CardsCarouselWidget> {
                           heroTag: widget.heroTag,
                         ));
                   },
-                  child: CardWidget(restaurant: widget.restaurantsList.elementAt(index), heroTag: widget.heroTag),
+                  child: CardWidget(
+                    restaurant: widget.restaurantsList.elementAt(index),
+                    heroTag: widget.heroTag,
+                    key: UniqueKey(),
+                  ),
                 );
               },
             ),

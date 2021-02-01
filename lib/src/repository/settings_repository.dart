@@ -2,15 +2,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:Gourmet2Go/src/helpers/FirebaseMessagingStreams.dart';
+
+import '../../src/models/dispatchmethod.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:global_configuration/global_configuration.dart';
+import 'package:google_map_location_picker/google_map_location_picker.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../helpers/custom_trace.dart';
 import '../helpers/maps_util.dart';
 import '../models/address.dart';
@@ -19,14 +22,26 @@ import '../models/setting.dart';
 
 ValueNotifier<Setting> setting = new ValueNotifier(new Setting());
 ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
+FirebaseMessagingStreams firebaseMessagingStreams = FirebaseMessagingStreams();
 Coupon coupon = new Coupon.fromJSON({});
+String orderType = null;
+String orderNote = '';
+String preorderInfo = '';
+
+DispatchMethod dispatchMethod = DispatchMethod.none;
 final navigatorKey = GlobalKey<NavigatorState>();
+final RouteObserver<PageRoute> routeObserver = new RouteObserver();
+
+/******************************************************************/
 
 Future<Setting> initSettings() async {
+
   Setting _setting;
   final String url = '${GlobalConfiguration().getValue('api_base_url')}settings';
+
   try {
     final response = await http.get(url, headers: {HttpHeaders.contentTypeHeader: 'application/json'});
+
     if (response.statusCode == 200 && response.headers.containsValue('application/json')) {
       if (json.decode(response.body)['data'] != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -52,7 +67,7 @@ Future<Setting> initSettings() async {
 
 Future<dynamic> setCurrentLocation() async {
   var location = new Location();
-  MapsUtil mapsUtil = new MapsUtil();
+  var mapsUtil = new MapsUtil();
   final whenDone = new Completer();
   Address _address = new Address();
   location.requestService().then((value) async {
@@ -72,6 +87,43 @@ Future<dynamic> setCurrentLocation() async {
   return whenDone.future;
 }
 
+Future<Address> setLocationManually(LocationResult locationResult) async {
+
+  var address = Address.fromJSON({
+    'address': locationResult.address,
+    'latitude': locationResult.latLng.latitude,
+    'longitude': locationResult.latLng.longitude,
+    'place_id': locationResult.placeId
+  });
+
+  await changeLocation(address);
+
+  return address;
+}
+
+Future<Address> pickAndSetLocationAutomatically() async {
+
+  var location = new Location();
+  var mapsUtility = new MapsUtil();
+  var serviceEnabled = await location.requestService();
+
+  if(serviceEnabled) {
+    try {
+      var locationData = await location.getLocation();
+      var addressComponents = await mapsUtility.getAddress(LatLng(locationData?.latitude, locationData?.longitude), setting.value.googleMapsKey);
+      var formattedAddress = addressComponents[0].toString();
+      var placeId = addressComponents[1].toString();
+      var address = Address.fromJSON({'address': formattedAddress, 'latitude': locationData?.latitude, 'longitude': locationData?.longitude, 'place_id' : placeId});
+      return await changeLocation(address); // putting in shared preference
+    }
+    catch(e){
+      return null;
+    }
+  }
+
+  return null;
+}
+
 Future<Address> changeCurrentLocation(Address _address) async {
   if (!_address.isUnknown()) {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -80,9 +132,17 @@ Future<Address> changeCurrentLocation(Address _address) async {
   return _address;
 }
 
+Future<Address> changeLocation(Address _address) async {
+  if (_address.isValid()) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('delivery_address', json.encode(_address.toMap()));
+  }
+  return _address;
+}
+
 Future<Address> getCurrentLocation() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //await prefs.clear();
+
   if (prefs.containsKey('delivery_address')) {
     deliveryAddress.value = Address.fromJSON(json.decode(prefs.getString('delivery_address')));
     return deliveryAddress.value;

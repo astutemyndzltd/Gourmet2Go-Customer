@@ -20,7 +20,7 @@ class Food {
   String unit;
   String packageItemsCount;
   bool featured;
-  bool deliverable;
+  bool outOfStock;
   Restaurant restaurant;
   Category category;
   List<Extra> extras;
@@ -44,7 +44,7 @@ class Food {
       unit = jsonMap['unit'] != null ? jsonMap['unit'].toString() : '';
       packageItemsCount = jsonMap['package_items_count'].toString();
       featured = jsonMap['featured'] ?? false;
-      deliverable = jsonMap['deliverable'] ?? false;
+      outOfStock = jsonMap['out_of_stock'] ?? false;
       restaurant = jsonMap['restaurant'] != null ? Restaurant.fromJSON(jsonMap['restaurant']) : Restaurant.fromJSON({});
       category = jsonMap['category'] != null ? Category.fromJSON(jsonMap['category']) : Category.fromJSON({});
       image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
@@ -71,7 +71,7 @@ class Food {
       unit = '';
       packageItemsCount = '';
       featured = false;
-      deliverable = false;
+      outOfStock = false;
       restaurant = Restaurant.fromJSON({});
       category = Category.fromJSON({});
       image = new Media();

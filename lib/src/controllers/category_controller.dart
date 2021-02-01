@@ -14,7 +14,7 @@ class CategoryController extends ControllerMVC {
   GlobalKey<ScaffoldState> scaffoldKey;
   Category category;
   bool loadCart = false;
-  List<Cart> carts = [];
+  List<CartItem> carts = [];
 
   CategoryController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -58,8 +58,8 @@ class CategoryController extends ControllerMVC {
   }
 
   Future<void> listenForCart() async {
-    final Stream<Cart> stream = await getCart();
-    stream.listen((Cart _cart) {
+    final Stream<CartItem> stream = await getCart();
+    stream.listen((CartItem _cart) {
       carts.add(_cart);
     });
   }
@@ -75,7 +75,7 @@ class CategoryController extends ControllerMVC {
     setState(() {
       this.loadCart = true;
     });
-    var _newCart = new Cart();
+    var _newCart = new CartItem();
     _newCart.food = food;
     _newCart.extras = [];
     _newCart.quantity = 1;
@@ -108,8 +108,8 @@ class CategoryController extends ControllerMVC {
     }
   }
 
-  Cart isExistInCart(Cart _cart) {
-    return carts.firstWhere((Cart oldCart) => _cart.isSame(oldCart), orElse: () => null);
+  CartItem isExistInCart(CartItem _cart) {
+    return carts.firstWhere((CartItem oldCart) => _cart.isSame(oldCart), orElse: () => null);
   }
 
   Future<void> refreshCategory() async {

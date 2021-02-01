@@ -17,7 +17,7 @@ class GridWidget extends StatelessWidget {
       crossAxisCount: 4,
       itemCount: restaurantsList.length,
       itemBuilder: (BuildContext context, int index) {
-        return GridItemWidget(restaurant: restaurantsList.elementAt(index), heroTag: heroTag);
+        return GridItemWidget(restaurant: restaurantsList.elementAt(index), heroTag: heroTag, key: UniqueKey());
       },
 //                  staggeredTileBuilder: (int index) => new StaggeredTile.fit(index % 2 == 0 ? 1 : 2),
       staggeredTileBuilder: (int index) => new StaggeredTile.fit(MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4),

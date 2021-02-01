@@ -14,7 +14,6 @@ class User {
   String address;
   String bio;
   Media image;
-  String role;
 
   // used for indicate if client logged in or not
   bool auth;
@@ -30,13 +29,6 @@ class User {
       email = jsonMap['email'] != null ? jsonMap['email'] : '';
       apiToken = jsonMap['api_token'];
       deviceToken = jsonMap['device_token'];
-
-      try {
-        role = jsonMap['roles'][0]['name'];
-      } catch (e) {
-        role = "";
-      }
-
       try {
         phone = jsonMap['custom_fields']['phone']['view'];
       } catch (e) {
@@ -52,9 +44,7 @@ class User {
       } catch (e) {
         bio = "";
       }
-      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0
-          ? Media.fromJSON(jsonMap['media'][0])
-          : new Media();
+      image = jsonMap['media'] != null && (jsonMap['media'] as List).length > 0 ? Media.fromJSON(jsonMap['media'][0]) : new Media();
     } catch (e) {
       print(CustomTrace(StackTrace.current, message: e));
     }

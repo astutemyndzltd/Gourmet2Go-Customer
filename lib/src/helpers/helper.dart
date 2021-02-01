@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -22,6 +23,19 @@ import '../models/restaurant.dart';
 import '../repository/settings_repository.dart';
 import 'app_config.dart' as config;
 import 'custom_trace.dart';
+
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${this.substring(1)}";
+  }
+}
+
+extension DoubleExtension on double {
+  double toFixed2() {
+    var f = 100; //pow(this, fractionDigits);
+    return (this * f).round() / f;
+  }
+}
 
 class Helper {
   BuildContext context;
@@ -60,7 +74,7 @@ class Helper {
   }
 
   static Future<Marker> getMarker(Map<String, dynamic> res) async {
-    final Uint8List markerIcon = await getBytesFromAsset('assets/img/marker.png', 120);
+    final Uint8List markerIcon = await getBytesFromAsset('assets/img/marker.png', 130);
     final Marker marker = Marker(
         markerId: MarkerId(res['id']),
         icon: BitmapDescriptor.fromBytes(markerIcon),
@@ -80,12 +94,8 @@ class Helper {
   }
 
   static Future<Marker> getMyPositionMarker(double latitude, double longitude) async {
-    final Uint8List markerIcon = await getBytesFromAsset('assets/img/my_marker.png', 120);
-    final Marker marker = Marker(
-        markerId: MarkerId(Random().nextInt(100).toString()),
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-        anchor: Offset(0.5, 0.5),
-        position: LatLng(latitude, longitude));
+    final Uint8List markerIcon = await getBytesFromAsset('assets/img/my_marker.png', 130);
+    final Marker marker = Marker(markerId: MarkerId(Random().nextInt(100).toString()), icon: BitmapDescriptor.fromBytes(markerIcon), anchor: Offset(0.5, 0.5), position: LatLng(latitude, longitude));
 
     return marker;
   }
@@ -121,15 +131,15 @@ class Helper {
                 text: setting.value?.defaultCurrency,
                 style: style == null
                     ? Theme.of(context).textTheme.subtitle1.merge(
-                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 6),
+                          TextStyle(fontWeight: FontWeight.w400, fontSize: Theme.of(context).textTheme.subtitle1.fontSize - 3),
                         )
                     : style.merge(TextStyle(fontWeight: FontWeight.w400, fontSize: style.fontSize - 6)),
                 children: <TextSpan>[
-                  TextSpan(text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
+                  TextSpan(text: myPrice.toFixed2().toString() ?? '', style: style ?? Theme.of(context).textTheme.subtitle1),
                 ],
               )
             : TextSpan(
-                text: myPrice.toStringAsFixed(setting.value?.currencyDecimalDigits) ?? '',
+                text: myPrice.toFixed2().toString() ?? '',
                 style: style ?? Theme.of(context).textTheme.subtitle1,
                 children: <TextSpan>[
                   TextSpan(
@@ -170,7 +180,7 @@ class Helper {
     order.foodOrders.forEach((foodOrder) {
       total += getTotalOrderPrice(foodOrder);
     });
-    return order.tax * total / 100;
+    return order.tax * (total + order.deliveryFee) / 100;
   }
 
   static double getTotalOrdersPrice(Order order) {
@@ -185,30 +195,46 @@ class Helper {
 
   static String getDistance(double distance, String unit) {
     String _unit = setting.value.distanceUnit;
-    if (_unit == 'km') {
+    /*if (_unit == 'km') {
       distance *= 1.60934;
-    }
+    }*/
     return distance != null ? distance.toStringAsFixed(2) + " " + unit : "";
   }
 
-  static bool canDelivery(Restaurant _restaurant, {List<Cart> carts}) {
-    bool _can = true;
-    String _unit = setting.value.distanceUnit;
-    double _deliveryRange = _restaurant.deliveryRange;
-    double _distance = _restaurant.distance;
-    carts?.forEach((Cart _cart) {
-      _can &= _cart.food.deliverable;
+  static bool canDeliveryy(Restaurant restaurant, {List<CartItem> carts}) {
+    bool canDeliver = true;
+    String unit = setting.value.distanceUnit;
+    double deliveryRange = restaurant.deliveryRange;
+    double distance = restaurant.distance;
+
+    carts?.forEach((CartItem c) {
+      canDeliver &= !c.food.outOfStock;
     });
 
-    if (_unit == 'km') {
-      _deliveryRange /= 1.60934;
+    if (unit == 'km') {
+      deliveryRange /= 1.60934;
     }
-    if (_distance == 0 && !deliveryAddress.value.isUnknown()) {
-      _distance = sqrt(pow(69.1 * (double.parse(_restaurant.latitude) - deliveryAddress.value.latitude), 2) +
-          pow(69.1 * (deliveryAddress.value.longitude - double.parse(_restaurant.longitude)) * cos(double.parse(_restaurant.latitude) / 57.3), 2));
+
+    if (distance == 0 && !deliveryAddress.value.isUnknown()) {
+      distance = sqrt(pow(69.1 * (double.parse(restaurant.latitude) - deliveryAddress.value.latitude), 2) + pow(69.1 * (deliveryAddress.value.longitude - double.parse(restaurant.longitude)) * cos(double.parse(restaurant.latitude) / 57.3), 2));
     }
-    _can &= _restaurant.availableForDelivery && (_distance < _deliveryRange) && !deliveryAddress.value.isUnknown();
-    return _can;
+
+    canDeliver &= restaurant.availableForDelivery && (distance < deliveryRange) && !deliveryAddress.value.isUnknown();
+    return canDeliver;
+  }
+
+  static bool canDeliver(Restaurant restaurant, {List<CartItem> cartItems}) {
+    if (deliveryAddress.value == null || !deliveryAddress.value.isValid()) return false;
+    if (!restaurant.availableForDelivery) return false;
+    if (restaurant.distance > restaurant.deliveryRange) return false;
+
+    for (var item in cartItems) {
+      if (item.food.outOfStock) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   static String skipHtml(String htmlString) {
@@ -280,11 +306,11 @@ class Helper {
 
   static String getCreditCardNumber(String number) {
     String result = '';
-    if (number != null && number.isNotEmpty && number.length == 16) {
+    if (number != null && number.isNotEmpty) {
       result = number.substring(0, 4);
       result += ' ' + number.substring(4, 8);
       result += ' ' + number.substring(8, 12);
-      result += ' ' + number.substring(12, 16);
+      result += ' ' + number.substring(12);
     }
     return result;
   }
@@ -294,11 +320,7 @@ class Helper {
     if (!_path.endsWith('/')) {
       _path += '/';
     }
-    Uri uri = Uri(
-        scheme: Uri.parse(GlobalConfiguration().getValue('base_url')).scheme,
-        host: Uri.parse(GlobalConfiguration().getValue('base_url')).host,
-        port: Uri.parse(GlobalConfiguration().getValue('base_url')).port,
-        path: _path + path);
+    Uri uri = Uri(scheme: Uri.parse(GlobalConfiguration().getValue('base_url')).scheme, host: Uri.parse(GlobalConfiguration().getValue('base_url')).host, port: Uri.parse(GlobalConfiguration().getValue('base_url')).port, path: _path + path);
     return uri;
   }
 
@@ -380,5 +402,16 @@ class Helper {
       default:
         return "";
     }
+  }
+
+  static void showSnackbar(BuildContext context, String message) {
+    Flushbar(
+            padding: EdgeInsets.symmetric(horizontal: 28, vertical: 13),
+            messageText: Text(
+              message,
+              style: TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 15),
+            ),
+            duration: Duration(seconds: 3))
+        .show(context);
   }
 }

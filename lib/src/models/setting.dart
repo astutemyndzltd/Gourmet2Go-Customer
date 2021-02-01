@@ -26,6 +26,7 @@ class Setting {
   String appVersion;
   bool enableVersion = true;
   List<String> homeSections = [];
+  String stripeKey;
 
   ValueNotifier<Brightness> brightness = new ValueNotifier(Brightness.light);
 
@@ -33,6 +34,7 @@ class Setting {
 
   Setting.fromJSON(Map<String, dynamic> jsonMap) {
     try {
+      stripeKey = jsonMap['stripe_key'] ?? null;
       appName = jsonMap['app_name'] ?? null;
       mainColor = jsonMap['main_color'] ?? null;
       mainDarkColor = jsonMap['main_dark_color'] ?? '';
