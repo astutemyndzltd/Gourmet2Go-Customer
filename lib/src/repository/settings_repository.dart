@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Gourmet2Go/src/helpers/FirebaseMessagingStreams.dart';
+import 'package:connectivity/connectivity.dart';
 
 import '../../src/models/dispatchmethod.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,8 +32,10 @@ String preorderInfo = '';
 DispatchMethod dispatchMethod = DispatchMethod.none;
 final navigatorKey = GlobalKey<NavigatorState>();
 final RouteObserver<PageRoute> routeObserver = new RouteObserver();
+final connectivity = new Connectivity();
 
 /******************************************************************/
+
 
 Future<Setting> initSettings() async {
 
@@ -188,4 +191,10 @@ Future<void> saveMessageId(String messageId) async {
 Future<String> getMessageId() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   return await prefs.get('google.message_id');
+}
+
+Future<bool> isConnectedToInternet() async {
+    var connectivity = new Connectivity();
+    var result = await connectivity.checkConnectivity();
+    return result != ConnectivityResult.none;
 }

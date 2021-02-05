@@ -10,6 +10,7 @@ import '../models/user.dart';
 import '../repository/user_repository.dart' as repository;
 
 class UserController extends ControllerMVC {
+
   User user = new User();
   bool hidePassword = true;
   bool loading = false;
@@ -41,6 +42,12 @@ class UserController extends ControllerMVC {
 
   void login() async {
     FocusScope.of(context).unfocus();
+
+    if (!await isConnectedToInternet()) {
+      scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Verify your internet connection')));
+      return;
+    }
+
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
@@ -70,13 +77,27 @@ class UserController extends ControllerMVC {
   }
 
   void register() async {
+
     FocusScope.of(context).unfocus();
+
+    if (!await isConnectedToInternet()) {
+      scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Verify your internet connection')));
+      return;
+    }
+
     if (loginFormKey.currentState.validate()) {
+
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
+
       repository.register(user).then((value) {
         if (value != null && value.apiToken != null) {
-          Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
+          Future.delayed(Duration(seconds: 2), () {
+            Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
+          });
+          scaffoldKey?.currentState?.showSnackBar(SnackBar(
+            content: Text('Registration successful'),
+          ));
         } else {
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
             content: Text(S.of(context).wrong_email_or_password),
@@ -93,10 +114,16 @@ class UserController extends ControllerMVC {
     }
   }
 
-  void resetPassword() {
+  void resetPassword() async {
     bool succeeded = false;
 
     FocusScope.of(context).unfocus();
+
+    if (!await isConnectedToInternet()) {
+      scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Verify your internet connection')));
+      return;
+    }
+
     if (loginFormKey.currentState.validate()) {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
@@ -129,4 +156,6 @@ class UserController extends ControllerMVC {
       });
     }
   }
+
+
 }

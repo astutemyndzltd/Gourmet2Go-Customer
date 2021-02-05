@@ -20,6 +20,7 @@ import '../repository/settings_repository.dart' as settingsRepo;
 import '../repository/slider_repository.dart';
 
 class HomeController extends ControllerMVC {
+
   OverlayEntry overlayLoader;
 
   List<Category> categories = <Category>[];
@@ -40,10 +41,10 @@ class HomeController extends ControllerMVC {
   }
 
   loadData() {
-    bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
+    bool f1Done = false, f2Done = false, f3Done = false/*, f4Done = false*/;
 
     VoidCallback refreshState = () {
-      bool allDone = f1Done && f2Done && f3Done && f4Done;
+      bool allDone = f1Done && f2Done && f3Done /*&& f4Done*/;
 
       if (allDone) {
         overlayLoader.remove();
@@ -55,7 +56,7 @@ class HomeController extends ControllerMVC {
     var future1 = listenForNearbyRestaurants();
     var future2 = listenForCuisines();
     var future3 = listenForPopularRestaurants();
-    var future4 = listenForRecentReviews();
+    //var future4 = listenForRecentReviews();
 
     future1.whenComplete(() {
       f1Done = true;
@@ -69,20 +70,20 @@ class HomeController extends ControllerMVC {
       f3Done = true;
       refreshState();
     });
-    future4.whenComplete(() {
+    /*future4.whenComplete(() {
       f4Done = true;
       refreshState();
-    });
+    });*/
   }
 
   Future<void> refreshHome() async {
-    bool f1Done = false, f2Done = false, f3Done = false, f4Done = false;
+    bool f1Done = false, f2Done = false, f3Done = false/*, f4Done = false*/;
 
     overlayLoader = Helper.overlayLoader(context);
     Overlay.of(context).insert(overlayLoader);
 
     VoidCallback removeLoader = () {
-      bool allDone = f1Done && f2Done && f3Done && f4Done;
+      bool allDone = f1Done && f2Done && f3Done /*&& f4Done*/;
 
       if (allDone) {
         overlayLoader.remove();
@@ -93,7 +94,7 @@ class HomeController extends ControllerMVC {
     var future1 = listenForNearbyRestaurants();
     var future2 = listenForCuisines();
     var future3 = listenForPopularRestaurants();
-    var future4 = listenForRecentReviews();
+    //var future4 = listenForRecentReviews();
 
     future1.whenComplete(() {
       f1Done = true;
@@ -110,10 +111,10 @@ class HomeController extends ControllerMVC {
       removeLoader();
     });
 
-    future4.whenComplete(() {
+    /*future4.whenComplete(() {
       f4Done = true;
       removeLoader();
-    });
+    });*/
 
   }
 
@@ -209,5 +210,6 @@ class HomeController extends ControllerMVC {
       loader.remove();
     });
   }
+
 
 }

@@ -28,6 +28,7 @@ class HomeWidget extends StatefulWidget {
 }
 
 class _HomeWidgetState extends StateMVC<HomeWidget> {
+
   HomeController _con;
   List<String> homeSections = [];
 
@@ -413,7 +414,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                     ),
                   );
 
-                case 'recent_reviews_heading':
+                /*case 'recent_reviews_heading':
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ListTile(
@@ -434,7 +435,7 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: ReviewsListWidget(reviewsList: _con.recentReviews),
-                  );
+                  );*/
 
                 default:
                   return SizedBox(height: 0);
@@ -445,4 +446,6 @@ class _HomeWidgetState extends StateMVC<HomeWidget> {
       ),
     );
   }
+
+
 }

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -405,13 +404,13 @@ class Helper {
   }
 
   static void showSnackbar(BuildContext context, String message) {
-    Flushbar(
-            padding: EdgeInsets.symmetric(horizontal: 28, vertical: 13),
-            messageText: Text(
-              message,
-              style: TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 15),
-            ),
-            duration: Duration(seconds: 3))
-        .show(context);
+    /*Flushbar(
+      padding: EdgeInsets.symmetric(horizontal: 28, vertical: 13),
+      messageText: Text(
+        message,
+        style: TextStyle(color: Colors.white, fontFamily: 'Roboto', fontSize: 15),
+      ),
+      duration: Duration(seconds: 3),
+    ).show(context);*/
   }
 }

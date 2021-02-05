@@ -1,5 +1,4 @@
 import '../../src/controllers/delivery_pickup_controller.dart';
-import 'package:flushbar/flushbar.dart';
 
 import '../repository/settings_repository.dart';
 import 'package:flutter/material.dart';
@@ -77,8 +76,10 @@ class CartBottomDetailsWidget extends StatelessWidget {
                         width: MediaQuery.of(context).size.width - 40,
                         child: FlatButton(
                           onPressed: () {
+
                             if (!_con.restaurant.isCurrentlyOpen() && !_con.restaurant.isAvailableForPreorder()) {
-                              Helper.showSnackbar(context, "The restaurant is neither open nor available for pre-order");
+                              _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("The restaurant is neither open nor available for pre-order")));
+                              //Helper.showSnackbar(context, "The restaurant is neither open nor available for pre-order");
                               return;
                             }
 
@@ -86,27 +87,33 @@ class CartBottomDetailsWidget extends StatelessWidget {
                               var con = _con as DeliveryPickupController;
 
                               if (con.getSelectedMethod() == null) {
-                                Helper.showSnackbar(context, "Please select delivery or pickup");
+                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Please select delivery and pickup')));
+                                //Helper.showSnackbar(context, "Please select delivery or pickup");
                                 return;
                               }
 
                               if (con.radioState == 'later' && preorderInfo == '') {
-                                Helper.showSnackbar(context, "Please select ${orderType.toLowerCase()} time");
+                                //Helper.showSnackbar(context, "Please select ${orderType.toLowerCase()} time");
+                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please select ${orderType.toLowerCase()} time")));
                                 return;
                               }
+
                             }
 
                             for (int i = 0; i < _con.carts.length; i++) {
                               var food = _con.carts[i].food;
 
                               if (food.outOfStock) {
-                                Helper.showSnackbar(context, "We're sorry, one or more food items in your cart are currently sold out");
+                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("We're sorry, one or more food items in your cart are currently sold out")));
+                                //Helper.showSnackbar(context, "We're sorry, one or more food items in your cart are currently sold out");
                                 return;
                               }
+
                             }
 
                             if (_con.subTotal < _con.restaurant.minOrderAmount) {
-                              Helper.showSnackbar(context, 'Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}');
+                              //Helper.showSnackbar(context, 'Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}');
+                              _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Minimum amount to place order with this restaurant is ${setting.value?.defaultCurrency}${_con.restaurant.minOrderAmount}. Your current order total is ${setting.value?.defaultCurrency}${_con.subTotal}')));
                             } else {
                               _con.goCheckout(context);
                             }

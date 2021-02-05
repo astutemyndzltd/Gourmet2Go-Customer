@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +27,12 @@ class SplashScreenController extends ControllerMVC {
   @override
   void initState() {
     super.initState();
+
+    settingRepo.connectivity.onConnectivityChanged.listen(checkConnectivity);
+
     firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
     configureFirebase(firebaseMessaging);
+
     settingRepo.setting.addListener(() {
       if (settingRepo.setting.value.appName != null && settingRepo.setting.value.appName != '' && settingRepo.setting.value.mainColor != null) {
         progress.value["Setting"] = 41;
@@ -35,17 +40,34 @@ class SplashScreenController extends ControllerMVC {
         progress?.notifyListeners();
       }
     });
+
     userRepo.currentUser.addListener(() {
       if (userRepo.currentUser.value.auth != null) {
         progress.value["User"] = 59;
         progress?.notifyListeners();
       }
     });
+
     Timer(Duration(seconds: 20), () {
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
         content: Text('There was a problem connecting to the server. Please try again.'),
       ));
     });
+  }
+
+  void checkConnectivity(ConnectivityResult result) {
+
+    switch(result) {
+      case ConnectivityResult.none:
+        Fluttertoast.showToast(
+          msg: 'Verify Internet Connection',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          timeInSecForIosWeb: 6,
+        );
+        break;
+    }
+
   }
 
   void configureFirebase(FirebaseMessaging _firebaseMessaging) {
@@ -101,4 +123,6 @@ class SplashScreenController extends ControllerMVC {
     );
     settingRepo.firebaseMessagingStreams.onMessageStreamController.add(message);
   }
+
+
 }

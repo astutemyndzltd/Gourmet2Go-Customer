@@ -396,7 +396,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                           color: Theme.of(context).hintColor,
                                         ),
                                         title: Text(
-                                          S.of(context).what_they_say,
+                                          'Reviews',
                                           style: Theme.of(context).textTheme.headline4,
                                         ),
                                       ),

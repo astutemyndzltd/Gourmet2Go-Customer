@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
-
 import '../../generated/l10n.dart';
 import '../models/category.dart';
 import '../models/food.dart';
@@ -128,4 +127,6 @@ class RestaurantController extends ControllerMVC {
     listenForGalleries(_id);
     listenForFeaturedFoods(_id);
   }
+
+
 }

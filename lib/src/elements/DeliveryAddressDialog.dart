@@ -17,7 +17,7 @@ class DeliveryAddressDialog {
         builder: (context) {
           return SimpleDialog(
 //            contentPadding: EdgeInsets.symmetric(horizontal: 20),
-            titlePadding: EdgeInsets.fromLTRB(16, 25, 16, 0),
+            //titlePadding: EdgeInsets.fromLTRB(16, 25, 16, 0),
             title: Row(
               children: <Widget>[
                 Icon(
@@ -26,7 +26,7 @@ class DeliveryAddressDialog {
                 ),
                 SizedBox(width: 10),
                 Text(
-                  S.of(context).add_delivery_address,
+                  'Edit Delivery Address',
                   style: Theme.of(context).textTheme.bodyText1,
                 )
               ],
@@ -58,7 +58,7 @@ class DeliveryAddressDialog {
                         onSaved: (input) => address.address = input,
                       ),
                     ),
-                    SizedBox(
+                    /*SizedBox(
                       width: double.infinity,
                       child: CheckboxFormField(
                         context: context,
@@ -66,10 +66,11 @@ class DeliveryAddressDialog {
                         onSaved: (input) => address.isDefault = input,
                         title: Text(S.of(context).makeItDefault),
                       ),
-                    )
+                    )*/
                   ],
                 ),
               ),
+              SizedBox(height: 15),
               Row(
                 children: <Widget>[
                   MaterialButton(
@@ -91,7 +92,6 @@ class DeliveryAddressDialog {
                 ],
                 mainAxisAlignment: MainAxisAlignment.end,
               ),
-              SizedBox(height: 10),
             ],
           );
         });
