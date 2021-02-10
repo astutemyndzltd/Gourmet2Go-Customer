@@ -21,8 +21,10 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
+
   Payment payment;
   guru.CreditCard creditCard;
+  bool processingOrder = false;
 
   CheckoutController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -36,6 +38,11 @@ class CheckoutController extends CartController {
   }
 
   void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock) async {
+
+    //processingOrder = true;
+
+    var overlayLoader = Helper.overlayLoader(context);
+    Overlay.of(context).insert(overlayLoader);
 
     var order = Order();
     order.orderType = settingRepo.orderType;
@@ -59,8 +66,6 @@ class CheckoutController extends CartController {
       order.foodOrders.add(foodOrder);
     }
 
-    var overlayLoader = Helper.overlayLoader(context);
-    Overlay.of(context).insert(overlayLoader);
 
     List<CartItem> cartItems = await getCartItemsNew();
     var restaurant = cartItems[0].food.restaurant;
@@ -125,6 +130,7 @@ class CheckoutController extends CartController {
         }
       } catch (e) {
         onAuthenticationFailed?.call();
+
       }
     }
 
@@ -138,6 +144,7 @@ class CheckoutController extends CartController {
     }
 
     overlayLoader.remove();
+
   }
 
   void updateCreditCard(guru.CreditCard creditCard) {

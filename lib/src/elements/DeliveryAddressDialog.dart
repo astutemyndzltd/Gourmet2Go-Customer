@@ -43,7 +43,7 @@ class DeliveryAddressDialog {
                         keyboardType: TextInputType.text,
                         decoration: getInputDecoration(hintText: S.of(context).home_address, labelText: S.of(context).description),
                         initialValue: address.description?.isNotEmpty ?? false ? address.description : null,
-                        validator: (input) => input.trim().length == 0 ? 'Not valid address description' : null,
+                        //validator: (input) => input.trim().length == 0 ? 'Not valid address description' : null,
                         onSaved: (input) => address.description = input,
                       ),
                     ),

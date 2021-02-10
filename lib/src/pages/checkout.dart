@@ -192,7 +192,15 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                               width: MediaQuery.of(context).size.width - 40,
                               child: FlatButton(
                                 onPressed: () async {
+
+                                  if(_con.processingOrder == true) return;
+
+                                  if(_con.processingOrder == false)  {
+                                    _con.processingOrder = true;
+                                  }
+
                                   if (_con.creditCard.validated()) {
+
                                     try {
                                       var cardInfo = _con.creditCard;
 
@@ -227,7 +235,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                       var onUnavailableForDelivery = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is not available for delivery')));
                                       var onFoodOutOfStock = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('One or more food items is currently out of stock')));
 
-                                      _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery, onFoodOutOfStock);
+                                      await _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery, onFoodOutOfStock);
 
                                     }
                                     on PlatformException catch (e) {
@@ -241,6 +249,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                   else {
                                     _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Enter all card details')));
                                   }
+
+                                  _con.processingOrder = false;
+
                                 },
                                 padding: EdgeInsets.symmetric(vertical: 14),
                                 color: Theme.of(context).accentColor,
