@@ -27,6 +27,8 @@ class RestaurantController extends ControllerMVC {
   List<String> selectedCategories = [];
   GlobalKey<ScaffoldState> scaffoldKey;
 
+  bool loadReview = true;
+
   RestaurantController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
@@ -62,10 +64,15 @@ class RestaurantController extends ControllerMVC {
   }
 
   void listenForRestaurantReviews({String id, String message}) async {
+    setState(() => loadReview = true);
     final Stream<Review> stream = await getRestaurantReviews(id);
     stream.listen((Review _review) {
-      setState(() => reviews.add(_review));
-    }, onError: (a) {}, onDone: () {});
+      setState(() { reviews.add(_review); loadReview = false; });
+    }, onError: (a) {
+      setState(() => loadReview = false);
+    }, onDone: () {
+      setState(() => loadReview = false);
+    });
   }
 
   void listenForFoods(String idRestaurant, {List<String> categoriesId}) async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import '../../src/models/payment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,7 +20,7 @@ class CheckoutWidget extends StatefulWidget {
   _CheckoutWidgetState createState() => _CheckoutWidgetState();
 }
 
-class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
+class _CheckoutWidgetState extends StateMVC<CheckoutWidget>  {
   CheckoutController _con;
 
   _CheckoutWidgetState() : super(CheckoutController()) {
@@ -32,7 +34,13 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
@@ -199,6 +207,9 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                     _con.processingOrder = true;
                                   }
 
+                                  var overlayLoader = Helper.overlayLoader(context);
+                                  Overlay.of(context).insert(overlayLoader);
+
                                   if (_con.creditCard.validated()) {
 
                                     try {
@@ -229,13 +240,14 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
 
                                       };
 
+                                      var onValidationError = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text("Order couldn't be placed at the moment")));
                                       var onError = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Please try with a different card')));
                                       var onAuthenticationFailed = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Authentication failed')));
-                                      var onRestaurantNotAvailable = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is neither open nor available for pre-order')));
+                                      var onRestaurantNotAvailable = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is either closed or unavailable for pre-order')));
                                       var onUnavailableForDelivery = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('The restaurant is not available for delivery')));
                                       var onFoodOutOfStock = () => _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('One or more food items is currently out of stock')));
 
-                                      await _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery, onFoodOutOfStock);
+                                      await _con.addOrder(paymentMethod, onAuthenticationFailed, onSuccess, onError, onRestaurantNotAvailable, onUnavailableForDelivery, onFoodOutOfStock, onValidationError);
 
                                     }
                                     on PlatformException catch (e) {
@@ -250,6 +262,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
                                     _con.scaffoldKey?.currentState?.showSnackBar(SnackBar(content: Text('Enter all card details')));
                                   }
 
+                                  overlayLoader.remove();
                                   _con.processingOrder = false;
 
                                 },
@@ -274,4 +287,6 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget> {
       ),
     );
   }
+
+
 }

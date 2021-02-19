@@ -405,7 +405,7 @@ class _RestaurantWidgetState extends StateMVC<RestaurantWidget> {
                                   ? SizedBox(height: 5)
                                   : Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                      child: ReviewsListWidget(reviewsList: _con.reviews),
+                                      child: ReviewsListWidget(reviewsList: _con.reviews, loading: _con.loadReview),
                                     ),
                             ],
                           ),

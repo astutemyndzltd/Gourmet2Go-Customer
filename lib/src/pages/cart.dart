@@ -1,3 +1,4 @@
+import 'package:Gourmet2Go/src/elements/CircularLoadingWidget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -24,7 +25,6 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
 
   CartController _con;
 
-
   _CartWidgetState() : super(CartController()) {
     _con = controller;
   }
@@ -46,6 +46,7 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
     _con.listenForCarts();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -57,7 +58,10 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
           automaticallyImplyLeading: false,
           leading: IconButton(
             onPressed: () {
-              Navigator.pop(context);
+              if(_con.carts.isNotEmpty)
+                Navigator.pop(context);
+              else
+                Navigator.pushReplacementNamed(context, '/Pages', arguments: 2);
             },
             icon: Icon(Icons.arrow_back),
             color: Theme.of(context).hintColor,
@@ -72,7 +76,9 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
         ),
         body: RefreshIndicator(
           onRefresh: _con.refreshCarts,
-          child: _con.carts.isEmpty
+          child: _con.loading
+              ? CircularLoadingWidget(height: 400)
+              : _con.carts.isEmpty
               ? EmptyCartWidget()
               : Stack(
                   alignment: AlignmentDirectional.bottomCenter,
@@ -178,10 +184,10 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
                             TextField(
                               keyboardType: TextInputType.text,
                               onChanged: (String value) {
-                                orderNote = value;
+                                appData.orderNote = value;
                               },
                               cursorColor: Theme.of(context).accentColor,
-                              controller: TextEditingController()..text = orderNote,
+                              controller: TextEditingController()..text = appData.orderNote,
                               //maxLines: null,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

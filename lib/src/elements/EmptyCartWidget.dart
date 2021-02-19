@@ -19,7 +19,7 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
 
   @override
   void initState() {
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 0), () {
       if (mounted) {
         setState(() {
           loading = false;
@@ -35,11 +35,11 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
       children: <Widget>[
         loading
             ? SizedBox(
-                height: 3,
-                child: LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).accentColor.withOpacity(0.2),
-                ),
-              )
+          height: 3,
+          child: LinearProgressIndicator(
+            backgroundColor: Theme.of(context).accentColor.withOpacity(0.2),
+          ),
+        )
             : SizedBox(),
         Container(
           alignment: AlignmentDirectional.center,
@@ -104,17 +104,17 @@ class _EmptyCartWidgetState extends State<EmptyCartWidget> {
               SizedBox(height: 50),
               !loading
                   ? FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/Pages', arguments: 2);
-                      },
-                      padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                      color: Theme.of(context).accentColor.withOpacity(1),
-                      shape: StadiumBorder(),
-                      child: Text(
-                        S.of(context).start_exploring,
-                        style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).scaffoldBackgroundColor)),
-                      ),
-                    )
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/Pages', arguments: 2);
+                },
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                color: Theme.of(context).accentColor.withOpacity(1),
+                shape: StadiumBorder(),
+                child: Text(
+                  S.of(context).start_exploring,
+                  style: Theme.of(context).textTheme.headline6.merge(TextStyle(color: Theme.of(context).scaffoldBackgroundColor)),
+                ),
+              )
                   : SizedBox(),
             ],
           ),

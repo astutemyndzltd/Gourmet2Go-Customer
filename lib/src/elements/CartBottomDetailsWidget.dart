@@ -8,9 +8,8 @@ import '../controllers/cart_controller.dart';
 import '../helpers/helper.dart';
 
 class CartBottomDetailsWidget extends StatelessWidget {
-  CartBottomDetailsWidget({Key key, @required CartController con})
-      : _con = con,
-        super(key: key);
+
+  CartBottomDetailsWidget({Key key, @required CartController con}): _con = con, super(key: key);
 
   final CartController _con;
 
@@ -87,14 +86,14 @@ class CartBottomDetailsWidget extends StatelessWidget {
                               var con = _con as DeliveryPickupController;
 
                               if (con.getSelectedMethod() == null) {
-                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Please select delivery and pickup')));
+                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Please select delivery or pickup')));
                                 //Helper.showSnackbar(context, "Please select delivery or pickup");
                                 return;
                               }
 
-                              if (con.radioState == 'later' && preorderInfo == '') {
+                              if (con.radioState == 'later' && appData.preorderData == null) {
                                 //Helper.showSnackbar(context, "Please select ${orderType.toLowerCase()} time");
-                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please select ${orderType.toLowerCase()} time")));
+                                _con.scaffoldKey.currentState.showSnackBar(SnackBar(content: Text("Please select ${appData.orderType.toLowerCase()} time")));
                                 return;
                               }
 

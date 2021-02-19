@@ -1,3 +1,4 @@
+import 'package:Gourmet2Go/src/elements/CircularLoadingWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -49,45 +50,47 @@ class _OrdersWidgetState extends StateMVC<OrdersWidget> {
       ),
       body: currentUser.value.apiToken == null
           ? PermissionDeniedWidget()
-          : _con.orders.isEmpty
-              ? EmptyOrdersWidget()
-              : RefreshIndicator(
-                  onRefresh: _con.refreshOrders,
-                  child: SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        /*Padding(
+          : _con.loading
+          ? CircularLoadingWidget(height: 400)
+              : _con.orders.isEmpty
+                  ? EmptyOrdersWidget()
+                  : RefreshIndicator(
+                      onRefresh: _con.refreshOrders,
+                      child: SingleChildScrollView(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
+                            /*Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: SearchBarWidget(),
                         ),*/
-                        SizedBox(height: 20),
-                        ListView.separated(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          primary: false,
-                          itemCount: _con.orders.length,
-                          itemBuilder: (context, index) {
-                            var _order = _con.orders.elementAt(index);
-                            return OrderItemWidget(
-                              expanded: index == 0 ? true : false,
-                              order: _order,
-                              onCanceled: (e) {
-                                _con.doCancelOrder(_order);
+                            SizedBox(height: 20),
+                            ListView.separated(
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              primary: false,
+                              itemCount: _con.orders.length,
+                              itemBuilder: (context, index) {
+                                var _order = _con.orders.elementAt(index);
+                                return OrderItemWidget(
+                                  expanded: index == 0 ? true : false,
+                                  order: _order,
+                                  onCanceled: (e) {
+                                    _con.doCancelOrder(_order);
+                                  },
+                                );
                               },
-                            );
-                          },
-                          separatorBuilder: (context, index) {
-                            return SizedBox(height: 20);
-                          },
+                              separatorBuilder: (context, index) {
+                                return SizedBox(height: 20);
+                              },
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
     );
   }
 }

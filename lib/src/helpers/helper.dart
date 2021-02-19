@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:Gourmet2Go/src/models/dispatchmethod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -37,6 +38,7 @@ extension DoubleExtension on double {
 }
 
 class Helper {
+
   BuildContext context;
   DateTime currentBackPressTime;
 
@@ -223,9 +225,14 @@ class Helper {
   }
 
   static bool canDeliver(Restaurant restaurant, {List<CartItem> cartItems}) {
-    if (deliveryAddress.value == null || !deliveryAddress.value.isValid()) return false;
+    var address = deliveryAddress.value;
+
+    if (address == null || !address.isValid()) return false;
     if (!restaurant.availableForDelivery) return false;
-    if (restaurant.distance > restaurant.deliveryRange) return false;
+
+    var distanceInKm = findDistance(address.latitude, address.longitude, double.parse(restaurant.latitude), double.parse(restaurant.longitude)) / 1000;
+
+    if (distanceInKm > restaurant.deliveryRange) return false;
 
     for (var item in cartItems) {
       if (item.food.outOfStock) {
@@ -234,6 +241,17 @@ class Helper {
     }
 
     return true;
+  }
+
+  static double findDistance(double lat1, double lng1, double lat2, double lng2) {
+    double d1, num1, d2, num2, d3;
+    d1 = lat1 * (pi / 180.0);
+    num1 = lng1 * (pi / 180.0);
+    d2 = lat2 * (pi / 180.0);
+    num2 = lng2 * (pi / 180.0) - num1;
+    d3 = pow(sin((d2 - d1) / 2.0), 2.0) + cos(d1) * cos(d2) * pow(sin(num2 / 2.0), 2.0);
+    return 6376500.0 * (2.0 * atan2(sqrt(d3), sqrt(1.0 - d3)));
+
   }
 
   static String skipHtml(String htmlString) {
@@ -413,4 +431,41 @@ class Helper {
       duration: Duration(seconds: 3),
     ).show(context);*/
   }
+}
+
+class PreorderData {
+  int selectedSlotTabIndex;
+  int selectedSlotCellIndex;
+  String day, time, info;
+  PreorderData(this.selectedSlotTabIndex, this.selectedSlotCellIndex, this.day, this.time, this.info);
+}
+
+class AppData {
+  String orderType = null, orderNote = null;
+  PreorderData preorderData = null;
+  DispatchMethod dispatchMethod = DispatchMethod.none;
+
+  clone() {
+    var n = AppData();
+    n.orderType = this.orderType;
+    n.orderNote = this.orderNote;
+    n.dispatchMethod = this.dispatchMethod;
+    n.preorderData = preorderData == null ? null : PreorderData(preorderData.selectedSlotTabIndex, preorderData.selectedSlotCellIndex, preorderData.day, preorderData.time, preorderData.info);
+    return n;
+  }
+
+  copyFrom(AppData appdata) {
+    this.orderNote = appdata.orderNote;
+    this.orderType = appdata.orderType;
+    this.dispatchMethod = appdata.dispatchMethod;
+    this.preorderData = appdata.preorderData;
+  }
+
+  clear() {
+    this.orderNote = null;
+    this.orderType = null;
+    this.preorderData = null;
+    this.dispatchMethod = DispatchMethod.none;
+  }
+
 }

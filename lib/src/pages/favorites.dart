@@ -12,7 +12,6 @@ import '../elements/ShoppingCartButtonWidget.dart';
 import '../repository/user_repository.dart';
 
 class FavoritesWidget extends StatefulWidget {
-
   final GlobalKey<ScaffoldState> parentScaffoldKey;
 
   FavoritesWidget({this.parentScaffoldKey});
@@ -112,49 +111,64 @@ class _FavoritesWidgetState extends StateMVC<FavoritesWidget> {
                         ),
                       ),
                     ),
-                    _con.favorites.isEmpty
+                    // first loading
+                    _con.loading
                         ? CircularLoadingWidget(height: 500)
-                        : Offstage(
-                            offstage: this.layout != 'list',
-                            child: ListView.separated(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              primary: false,
-                              itemCount: _con.favorites.length,
-                              separatorBuilder: (context, index) {
-                                return SizedBox(height: 10);
-                              },
-                              itemBuilder: (context, index) {
-                                return FavoriteListItemWidget(
-                                  heroTag: 'favorites_list',
-                                  favorite: _con.favorites.elementAt(index),
-                                );
-                              },
-                            ),
-                          ),
-                    _con.favorites.isEmpty
+                        : _con.favorites.isEmpty
+                            ? Container(
+                                height: 500,
+                                width: double.infinity,
+                                child: Center(
+                                    child: Text(
+                                  'No foods to show',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context).textTheme.headline3.merge(TextStyle(fontWeight: FontWeight.w300)),
+                                )),
+                              )
+                            : Offstage(
+                                offstage: this.layout != 'list',
+                                child: ListView.separated(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  itemCount: _con.favorites.length,
+                                  separatorBuilder: (context, index) {
+                                    return SizedBox(height: 10);
+                                  },
+                                  itemBuilder: (context, index) {
+                                    return FavoriteListItemWidget(
+                                      heroTag: 'favorites_list',
+                                      favorite: _con.favorites.elementAt(index),
+                                    );
+                                  },
+                                ),
+                              ),
+                    // second loading
+                    _con.loading
                         ? CircularLoadingWidget(height: 500)
-                        : Offstage(
-                            offstage: this.layout != 'grid',
-                            child: GridView.count(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              primary: false,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 20,
-                              padding: EdgeInsets.symmetric(horizontal: 20),
-                              // Create a grid with 2 columns. If you change the scrollDirection to
-                              // horizontal, this produces 2 rows.
-                              crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
-                              // Generate 100 widgets that display their index in the List.
-                              children: List.generate(_con.favorites.length, (index) {
-                                return FavoriteGridItemWidget(
-                                  heroTag: 'favorites_grid',
-                                  favorite: _con.favorites.elementAt(index),
-                                );
-                              }),
-                            ),
-                          )
+                        : _con.favorites.isEmpty
+                            ? SizedBox.shrink()
+                            : Offstage(
+                                offstage: this.layout != 'grid',
+                                child: GridView.count(
+                                  scrollDirection: Axis.vertical,
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 20,
+                                  padding: EdgeInsets.symmetric(horizontal: 20),
+                                  // Create a grid with 2 columns. If you change the scrollDirection to
+                                  // horizontal, this produces 2 rows.
+                                  crossAxisCount: MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 4,
+                                  // Generate 100 widgets that display their index in the List.
+                                  children: List.generate(_con.favorites.length, (index) {
+                                    return FavoriteGridItemWidget(
+                                      heroTag: 'favorites_grid',
+                                      favorite: _con.favorites.elementAt(index),
+                                    );
+                                  }),
+                                ),
+                              )
                   ],
                 ),
               ),

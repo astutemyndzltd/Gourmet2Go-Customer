@@ -124,10 +124,10 @@ class HomeController extends ControllerMVC {
     showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {
-      if (settingsRepo.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
-      if (settingsRepo.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
+      if (settingsRepo.appData.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
+      if (settingsRepo.appData.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
+      if (settingsRepo.appData.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
+      if (settingsRepo.appData.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
       showableRestaurants.add(restaurant);
     }
 

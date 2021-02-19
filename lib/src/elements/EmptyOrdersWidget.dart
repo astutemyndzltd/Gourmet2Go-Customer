@@ -19,7 +19,7 @@ class _EmptyOrdersWidgetState extends State<EmptyOrdersWidget> {
 
   @override
   void initState() {
-    Timer(Duration(seconds: 5), () {
+    Timer(Duration(seconds: 0), () {
       if (mounted) {
         setState(() {
           loading = false;
@@ -35,11 +35,11 @@ class _EmptyOrdersWidgetState extends State<EmptyOrdersWidget> {
       children: <Widget>[
         loading
             ? SizedBox(
-                height: 3,
-                child: LinearProgressIndicator(
-                  backgroundColor: Theme.of(context).accentColor.withOpacity(0.2),
-                ),
-              )
+          height: 3,
+          child: LinearProgressIndicator(
+            backgroundColor: Theme.of(context).accentColor.withOpacity(0.2),
+          ),
+        )
             : SizedBox(),
         Container(
           alignment: AlignmentDirectional.center,

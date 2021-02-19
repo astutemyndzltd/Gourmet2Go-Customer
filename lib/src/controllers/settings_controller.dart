@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/helper.dart';
+import 'package:Gourmet2Go/src/repository/settings_repository.dart' as settingRepo;
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
@@ -11,6 +13,7 @@ class SettingsController extends ControllerMVC {
   CreditCard creditCard = new CreditCard();
   GlobalKey<FormState> loginFormKey;
   GlobalKey<ScaffoldState> scaffoldKey;
+
 
   SettingsController() {
     loginFormKey = new GlobalKey<FormState>();

@@ -8,6 +8,7 @@ import '../repository/order_repository.dart';
 class ProfileController extends ControllerMVC {
   List<Order> recentOrders = [];
   GlobalKey<ScaffoldState> scaffoldKey;
+  bool loading = true;
 
   ProfileController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -15,17 +16,24 @@ class ProfileController extends ControllerMVC {
   }
 
   void listenForRecentOrders({String message}) async {
+
+    setState(() => loading = true);
+
+
     final Stream<Order> stream = await getRecentOrders();
     stream.listen((Order _order) {
       setState(() {
+        loading = false;
         recentOrders.add(_order);
       });
     }, onError: (a) {
+      setState(() => loading = false);
       print(a);
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
+      setState(() => loading = false);
       if (message != null) {
         scaffoldKey?.currentState?.showSnackBar(SnackBar(
           content: Text(message),

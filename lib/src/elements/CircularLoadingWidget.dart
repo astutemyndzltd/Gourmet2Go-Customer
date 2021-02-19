@@ -34,10 +34,6 @@ class _CircularLoadingWidgetState extends State<CircularLoadingWidget> with Sing
 
   @override
   void dispose() {
-//    Timer(Duration(seconds: 30), () {
-//      //if (mounted) {
-//      //}
-//    });
     animationController.dispose();
     super.dispose();
   }

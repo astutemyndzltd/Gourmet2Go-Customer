@@ -22,7 +22,7 @@ class TrackingController extends ControllerMVC {
   List<OrderStatus> orderStatus = <OrderStatus>[];
   GlobalKey<ScaffoldState> scaffoldKey;
   ValueNotifier<int> counter = ValueNotifier(0);
-  StreamSubscription onMessageSubscription;
+  StreamSubscription onMessageSubscription, onResumeSubscription, onLaunchSubscription;
 
   TrackingController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -31,6 +31,8 @@ class TrackingController extends ControllerMVC {
 
   setupFirebaseMessageListeners() {
     onMessageSubscription = firebaseMessagingStreams.onMessageStream.listen(onReceiveFirebaseMessage);
+    onResumeSubscription = firebaseMessagingStreams.onResumeStream.listen(onReceiveFirebaseMessage);
+    onLaunchSubscription = firebaseMessagingStreams.onLaunchStream.listen(onReceiveFirebaseMessage);
   }
 
   onReceiveFirebaseMessage(Map<String, dynamic> message) {
@@ -45,6 +47,8 @@ class TrackingController extends ControllerMVC {
   @override
   void dispose() {
     onMessageSubscription.cancel();
+    onLaunchSubscription.cancel();
+    onResumeSubscription.cancel();
     super.dispose();
   }
 

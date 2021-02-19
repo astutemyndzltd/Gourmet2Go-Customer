@@ -18,6 +18,7 @@ class PaymentMethodsWidget extends StatefulWidget {
 }
 
 class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
+
   PaymentMethodList list;
 
   @override
@@ -131,4 +132,6 @@ class _PaymentMethodsWidgetState extends State<PaymentMethodsWidget> {
       ),
     );
   }
+
+
 }

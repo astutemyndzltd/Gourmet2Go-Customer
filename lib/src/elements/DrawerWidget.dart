@@ -77,7 +77,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
             ),
           ),
           // notification
-          ListTile(
+          /*ListTile(
             onTap: () {
               Navigator.of(context).pushNamed('/Pages', arguments: 0);
             },
@@ -89,7 +89,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
               S.of(context).notifications,
               style: Theme.of(context).textTheme.subtitle1,
             ),
-          ),
+          ),*/
           // my orders
           ListTile(
             onTap: () {
@@ -216,6 +216,7 @@ class _DrawerWidgetState extends StateMVC<DrawerWidget> {
             onTap: () {
               if (currentUser.value.apiToken != null) {
                 logout().then((value) {
+                  appData.clear();
                   Navigator.of(context).pushNamedAndRemoveUntil('/Pages', (Route<dynamic> route) => false, arguments: 2);
                 });
               } else {

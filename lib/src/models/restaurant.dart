@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 import '../helpers/custom_trace.dart';
@@ -178,7 +179,6 @@ class Restaurant {
     }
 
     return times;
-
   }
 
   List<String> generateTimesForTomorrow({int durationInMin = 15}) {
@@ -238,6 +238,76 @@ class Restaurant {
     return false;
   }
 
+  Map<String, List<String>> generateTimesForWeek({int durationInMin = 15}) {
+    var timesMap = openingTimes.toMap();
+    var weekTimeMap = new Map<String, List<TimeSlot>>();
+    var timesForWeek = new Map<String, List<String>>();
+
+    var dateTime = DateTime.now();
+    var dayFormatter = DateFormat('EEEE');
+    var today = dayFormatter.format(dateTime).toLowerCase();
+    var todayIndex = timesMap.keys.toList().indexOf(today);
+
+    var transform = (entry) {
+      weekTimeMap[entry.key] = entry.value;
+      timesForWeek[entry.key] = new List<String>();
+    };
+
+    timesMap.entries.skip(todayIndex).take(7 - todayIndex).forEach(transform);
+    timesMap.entries.take(todayIndex).forEach(transform);
+
+    if (availableForPreorder && openingTimes != null) {
+      var timeFormatter = DateFormat('jm');
+      var time = timeFormatter.parse(timeFormatter.format(dateTime));
+
+      for (var entry in weekTimeMap.entries) {
+        var slots = timesForWeek[entry.key];
+
+        if (entry.key == today && closed) continue;
+
+        var timeSlots = timesMap[entry.key];
+
+        if (timeSlots == null) continue;
+
+        for (var slot in timeSlots) {
+          var opensAt = timeFormatter.parse(slot.opensAt);
+          var closesAt = timeFormatter.parse(slot.closesAt);
+          var minutesToAdd = (durationInMin * ((opensAt.minute ~/ durationInMin) + (opensAt.minute % durationInMin == 0 ? 0 : 1))) - opensAt.minute;
+          var startTime = opensAt.add(Duration(minutes: minutesToAdd));
+
+          while (startTime.compareTo(closesAt) <= 0) {
+            var initial = startTime;
+            startTime = startTime.add(Duration(minutes: durationInMin));
+            if (entry.key == today && (startTime.isBefore(time) || startTime.difference(time) < Duration(hours: 1))) continue;
+            slots.add(timeFormatter.format(initial));
+          }
+        }
+      }
+    }
+
+    return timesForWeek;
+  }
+
+  bool isAvailableForOrderOn(String day, String timeString) {
+    if (!availableForPreorder) return false;
+    var dateTime = DateTime.now();
+    var dayFormatter = DateFormat('EEEE');
+    var today = dayFormatter.format(dateTime).toLowerCase();
+    if (day == today && closed) return false;
+    var timeFormatter = DateFormat('jm');
+    var time = timeFormatter.parse(timeString);
+    var slots = openingTimes.toMap()[day];
+
+    if (slots == null) return false;
+
+    for (var slot in slots) {
+      var opensAt = timeFormatter.parse(slot.opensAt);
+      var closesAt = timeFormatter.parse(slot.closesAt);
+      if (time.compareTo(opensAt) >= 0 && time.compareTo(closesAt) <= 0) return true;
+    }
+
+    return false;
+  }
 }
 
 class OpeningTimesForWeek {
@@ -269,6 +339,10 @@ class OpeningTimesForWeek {
       "saturday": saturday,
       "sunday": sunday,
     };
+  }
+
+  toList() {
+    return [monday, tuesday, wednesday, thursday, friday, saturday, sunday];
   }
 }
 

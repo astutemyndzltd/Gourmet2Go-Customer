@@ -58,7 +58,7 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
             new ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
           ],
         ),
-        floatingActionButton: _con.cart != null && _con.cart.food.restaurant.availableForDelivery
+        /*floatingActionButton: _con.cart != null && _con.cart.food.restaurant.availableForDelivery
             ? FloatingActionButton(
                 onPressed: () async {
                   LocationResult result = await showLocationPicker(
@@ -83,7 +83,7 @@ class _DeliveryAddressesWidgetState extends StateMVC<DeliveryAddressesWidget> {
                   Icons.add,
                   color: Theme.of(context).primaryColor,
                 ))
-            : SizedBox(height: 0),
+            : SizedBox(height: 0),*/
         body: RefreshIndicator(
           onRefresh: _con.refreshAddresses,
           child: SingleChildScrollView(

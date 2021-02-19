@@ -11,10 +11,8 @@ import '../models/cart.dart';
 import '../models/coupon.dart';
 import '../repository/cart_repository.dart';
 import '../repository/coupon_repository.dart';
-import '../repository/settings_repository.dart';
+import '../repository/settings_repository.dart' as settingRepo;
 import '../repository/user_repository.dart';
-
-
 
 class CartController extends ControllerMVC {
 
@@ -26,38 +24,36 @@ class CartController extends ControllerMVC {
   double total = 0.0;
   GlobalKey<ScaffoldState> scaffoldKey;
   Restaurant restaurant;
+  bool loading = true;
 
   CartController() {
     this.scaffoldKey = new GlobalKey<ScaffoldState>();
   }
 
-  void listenForCarts({String message}) async {
+  void listenForCarts({String message, VoidCallback callback}) async {
+    setState(() { loading = true; });
     carts.clear();
     final Stream<CartItem> stream = await getCart();
     stream.listen((CartItem _cart) {
       if (!carts.contains(_cart)) {
         setState(() {
-          coupon = _cart.food.applyCoupon(coupon);
+          loading = false;
+          settingRepo.coupon = _cart.food.applyCoupon(settingRepo.coupon);
           carts.add(_cart);
         });
       }
     }, onError: (a) {
+      setState(() { loading = false; });
       print(a);
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
         content: Text(S.of(context).verify_your_internet_connection),
       ));
     }, onDone: () {
 
-      if(carts.isEmpty) {
-        orderType = null;
-      }
-
+      setState(() { loading = false; });
 
       if (carts.isNotEmpty) {
         restaurant = carts[0].food.restaurant;
-      }
-
-      if (carts.isNotEmpty) {
         calculateSubtotal();
       }
 
@@ -68,8 +64,10 @@ class CartController extends ControllerMVC {
       }
 
       onLoadingCartDone();
-
       setState((){});
+
+      callback?.call();
+
     });
   }
 
@@ -100,7 +98,7 @@ class CartController extends ControllerMVC {
     setState(() {
       this.carts.remove(_cart);
       if(this.carts.isEmpty) {
-        orderType = null;
+        settingRepo.appData.clear();
       }
     });
     removeCart(_cart).then((value) {
@@ -127,7 +125,7 @@ class CartController extends ControllerMVC {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
     }*/
 
-    deliveryFee = orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
+    deliveryFee = settingRepo.appData.orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
 
     taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;
@@ -135,10 +133,10 @@ class CartController extends ControllerMVC {
   }
 
   void doApplyCoupon(String code, {String message}) async {
-    coupon = new Coupon.fromJSON({"code": code, "valid": null});
+    settingRepo.coupon = new Coupon.fromJSON({"code": code, "valid": null});
     final Stream<Coupon> stream = await verifyCoupon(code);
     stream.listen((Coupon _coupon) async {
-      coupon = _coupon;
+      settingRepo.coupon = _coupon;
     }, onError: (a) {
       print(a);
       scaffoldKey?.currentState?.showSnackBar(SnackBar(
@@ -191,10 +189,10 @@ class CartController extends ControllerMVC {
   }
 
   Color getCouponIconColor() {
-    print(coupon.toMap());
-    if (coupon?.valid == true) {
+    //print(coupon.toMap());
+    if (settingRepo.coupon?.valid == true) {
       return Colors.green;
-    } else if (coupon?.valid == false) {
+    } else if (settingRepo.coupon?.valid == false) {
       return Colors.redAccent;
     }
     return Theme.of(context).focusColor.withOpacity(0.7);

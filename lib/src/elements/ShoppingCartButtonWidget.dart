@@ -7,11 +7,7 @@ import '../models/route_argument.dart';
 import '../repository/user_repository.dart';
 
 class ShoppingCartButtonWidget extends StatefulWidget {
-  const ShoppingCartButtonWidget({
-    this.iconColor,
-    this.labelColor,
-    Key key,
-  }) : super(key: key);
+  const ShoppingCartButtonWidget({this.iconColor, this.labelColor, Key key}) : super(key: key);
 
   final Color iconColor;
   final Color labelColor;

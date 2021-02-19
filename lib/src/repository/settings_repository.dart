@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:Gourmet2Go/src/helpers/FirebaseMessagingStreams.dart';
+import 'package:Gourmet2Go/src/helpers/helper.dart';
 import 'package:connectivity/connectivity.dart';
 
 import '../../src/models/dispatchmethod.dart';
@@ -25,17 +26,13 @@ ValueNotifier<Setting> setting = new ValueNotifier(new Setting());
 ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
 FirebaseMessagingStreams firebaseMessagingStreams = FirebaseMessagingStreams();
 Coupon coupon = new Coupon.fromJSON({});
-String orderType = null;
-String orderNote = '';
-String preorderInfo = '';
-
-DispatchMethod dispatchMethod = DispatchMethod.none;
+final appData = new AppData();
 final navigatorKey = GlobalKey<NavigatorState>();
 final RouteObserver<PageRoute> routeObserver = new RouteObserver();
 final connectivity = new Connectivity();
 
-/******************************************************************/
 
+/******************************************************************/
 
 Future<Setting> initSettings() async {
 

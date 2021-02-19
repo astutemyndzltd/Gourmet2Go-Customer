@@ -1,10 +1,8 @@
-import 'dart:convert';
+import 'package:Gourmet2Go/src/helpers/app_config.dart';
 
 import '../../src/helpers/helper.dart';
 import '../../src/repository/cart_repository.dart';
-import '../../src/repository/restaurant_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stripe_payment/stripe_payment.dart' as stripe;
 import 'package:stripe_payment/stripe_payment.dart';
 import '../../generated/l10n.dart';
@@ -21,7 +19,6 @@ import '../repository/user_repository.dart' as userRepo;
 import 'cart_controller.dart';
 
 class CheckoutController extends CartController {
-
   Payment payment;
   guru.CreditCard creditCard;
   bool processingOrder = false;
@@ -37,17 +34,11 @@ class CheckoutController extends CartController {
     setState(() {});
   }
 
-  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock) async {
-
-    //processingOrder = true;
-
-    var overlayLoader = Helper.overlayLoader(context);
-    Overlay.of(context).insert(overlayLoader);
+  void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock, VoidCallback onValidationError) async {
 
     var order = Order();
-    order.orderType = settingRepo.orderType;
-    order.note = settingRepo.orderNote ?? '';
-    order.preorderInfo = settingRepo.preorderInfo;
+    order.orderType = settingRepo.appData.orderType;
+    order.note = settingRepo.appData.orderNote ?? '';
     order.foodOrders = List<FoodOrder>();
     order.tax = carts[0].food.restaurant.defaultTax;
     order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
@@ -66,59 +57,50 @@ class CheckoutController extends CartController {
       order.foodOrders.add(foodOrder);
     }
 
+    /// validation ====================================================================================
 
-    List<CartItem> cartItems = await getCartItemsNew();
-    var restaurant = cartItems[0].food.restaurant;
-
-    for (var item in cartItems) {
+    for (var item in carts) {
       if (item.food.outOfStock) {
         onFoodOutOfStock?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
     //////////////////////////////////////////////////////////////
 
-    bool isPreOrder = settingRepo.preorderInfo != '';
+    bool isPreOrder = settingRepo.appData.preorderData != null;
 
     if (isPreOrder) {
-      var ifForTomorrow = settingRepo.preorderInfo.contains(',');
-
-      if (ifForTomorrow) {
-        if (!restaurant.isAvailableForPreorderTomorrow()) {
-          onRestaurantNotAvailable?.call();
-          overlayLoader.remove();
-          return;
-        }
-      } else {
-        if (!restaurant.isAvailableForPreorderToday()) {
-          onRestaurantNotAvailable?.call();
-          overlayLoader.remove();
-          return;
-        }
+      var preorderData = settingRepo.appData.preorderData;
+      order.preorderInfo = preorderData.info;
+      if (!restaurant.isAvailableForOrderOn(preorderData.day, preorderData.time)) {
+        onRestaurantNotAvailable?.call();
+        return;
       }
     } else {
+      order.preorderInfo = '';
       if (!restaurant.isCurrentlyOpen()) {
         onRestaurantNotAvailable?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
     ////////////////////////////////////////////////////////////
 
-    bool isDelivery = settingRepo.orderType == 'Delivery';
+    bool isDelivery = settingRepo.appData.orderType == 'Delivery';
 
     if (isDelivery) {
       if (!restaurant.availableForDelivery) {
         onUnavailableForDelivery?.call();
-        overlayLoader.remove();
         return;
       }
     }
 
     var response = await orderRepo.addOrder(order: order, payment: this.payment, price: this.total, paymentMethodId: paymentMethod.id, cardBrand: paymentMethod.card.brand.capitalize());
+
+    if (response['message'] == 'validation error') {
+      onValidationError?.call();
+    }
 
     if (response['message'] == 'requires action') {
       var clientSecret = response['data']['client_secret'].toString();
@@ -130,7 +112,6 @@ class CheckoutController extends CartController {
         }
       } catch (e) {
         onAuthenticationFailed?.call();
-
       }
     }
 
@@ -142,9 +123,6 @@ class CheckoutController extends CartController {
     if (response['message'] == 'invalid status') {
       onError?.call();
     }
-
-    overlayLoader.remove();
-
   }
 
   void updateCreditCard(guru.CreditCard creditCard) {
@@ -155,4 +133,5 @@ class CheckoutController extends CartController {
       ));
     });
   }
+
 }

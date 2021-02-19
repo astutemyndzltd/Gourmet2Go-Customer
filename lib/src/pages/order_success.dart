@@ -5,13 +5,15 @@ import '../helpers/helper.dart';
 
 
 class OrderSuccessWidget extends StatelessWidget {
+
   final Map<String, dynamic> orderDetails;
 
   OrderSuccessWidget({Key key, this.orderDetails}) : super(key: key);
 
   Widget build(BuildContext context) {
 
-    orderType = null;
+    appData.clear();
+
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
@@ -188,5 +190,7 @@ class OrderSuccessWidget extends StatelessWidget {
             ],
           )),
     );
+
   }
+
 }

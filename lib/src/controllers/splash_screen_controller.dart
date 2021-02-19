@@ -94,7 +94,7 @@ class SplashScreenController extends ControllerMVC {
     } catch (e) {
       print(CustomTrace(StackTrace.current, message: e));
     }
-    //settingRepo.firebaseMessagingStreams.onResumeStreamController.sink.add(message);
+    settingRepo.firebaseMessagingStreams.onResumeStreamController.add(message);
   }
 
   Future notificationOnLaunch(Map<String, dynamic> message) async {
@@ -111,7 +111,7 @@ class SplashScreenController extends ControllerMVC {
     } catch (e) {
       print(CustomTrace(StackTrace.current, message: e));
     }
-    //settingRepo.firebaseMessagingStreams.onLaunchStreamController.sink.add(message);
+    settingRepo.firebaseMessagingStreams.onLaunchStreamController.add(message);
   }
 
   Future notificationOnMessage(Map<String, dynamic> message) async {
@@ -123,6 +123,5 @@ class SplashScreenController extends ControllerMVC {
     );
     settingRepo.firebaseMessagingStreams.onMessageStreamController.add(message);
   }
-
 
 }

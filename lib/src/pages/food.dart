@@ -54,7 +54,6 @@ class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
     _con.listenForCart();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -305,21 +304,26 @@ class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
                                       );
                                     }),
                                   ),
-                                  ListTile(
-                                    dense: true,
-                                    contentPadding: EdgeInsets.symmetric(vertical: 10),
-                                    leading: Icon(
-                                      Icons.recent_actors,
-                                      color: Theme.of(context).hintColor,
-                                    ),
-                                    title: Text(
-                                      S.of(context).reviews,
-                                      style: Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                  ),
+                                  _con.food.foodReviews.isNotEmpty
+                                      ? ListTile(
+                                          dense: true,
+                                          contentPadding: EdgeInsets.symmetric(vertical: 10),
+                                          leading: Icon(
+                                            Icons.recent_actors,
+                                            color: Theme.of(context).hintColor,
+                                          ),
+                                          title: Text(
+                                            S.of(context).reviews,
+                                            style: Theme.of(context).textTheme.subtitle1,
+                                          ),
+                                        )
+                                      : SizedBox.shrink(),
+
                                   ReviewsListWidget(
+                                    loading: _con.loadFood,
                                     reviewsList: _con.food.foodReviews,
                                   ),
+
                                 ],
                               ),
                             ),
@@ -471,6 +475,7 @@ class _FoodWidgetState extends StateMVC<FoodWidget> with RouteAware {
                                                         oldFood: _con.cartItems.elementAt(0)?.food,
                                                         newFood: _con.food,
                                                         onPressed: (food, {reset: true}) {
+                                                          appData.clear();
                                                           return _con.addToCart(_con.food, reset: true);
                                                         });
                                                   },
