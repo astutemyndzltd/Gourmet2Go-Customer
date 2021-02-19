@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:Gourmet2Go/src/elements/CircularLoadingWidget.dart';
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../src/repository/settings_repository.dart';
@@ -108,7 +109,7 @@ class _DeliveryPickupWidgetState extends StateMVC<DeliveryPickupWidget> {
               style: Theme.of(context).textTheme.headline6.merge(TextStyle(letterSpacing: 1.3)),
             ),
             actions: <Widget>[
-              ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
+              //ShoppingCartButtonWidget(iconColor: Theme.of(context).hintColor, labelColor: Theme.of(context).accentColor),
             ],
           ),
           body: _con.restaurant == null

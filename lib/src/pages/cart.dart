@@ -1,4 +1,5 @@
 import 'package:Gourmet2Go/src/elements/CircularLoadingWidget.dart';
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -13,6 +14,7 @@ import '../models/route_argument.dart';
 import '../repository/settings_repository.dart';
 
 class CartWidget extends StatefulWidget {
+
   final RouteArgument routeArgument;
 
   CartWidget({Key key, this.routeArgument}) : super(key: key);
@@ -49,6 +51,7 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,
       child: Scaffold(
@@ -185,6 +188,7 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
                               keyboardType: TextInputType.text,
                               onChanged: (String value) {
                                 appData.orderNote = value;
+                                appData.writeToConsole();
                               },
                               cursorColor: Theme.of(context).accentColor,
                               controller: TextEditingController()..text = appData.orderNote,
@@ -200,7 +204,7 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
                                     size: 28,
                                   ),
                                 ),
-                                hintText: 'Add Order Note',
+                                hintText: 'Order Note',
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.2))),
                                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.5))),
                                 enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(30), borderSide: BorderSide(color: Theme.of(context).focusColor.withOpacity(0.2))),

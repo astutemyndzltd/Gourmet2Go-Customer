@@ -1,3 +1,4 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:global_configuration/global_configuration.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -26,7 +27,7 @@ class PayPalController extends ControllerMVC {
     final String _deliveryAddress =
         'delivery_address_id=${settingRepo.deliveryAddress.value?.id}';
     final String _couponCode = 'coupon_code=${settingRepo.coupon?.code}';
-    final String _orderType = 'order_type=${settingRepo.appData.orderType}';
+    final String _orderType = 'order_type=${appData.orderType}';
     url =
         '${GlobalConfiguration().getValue('base_url')}payments/paypal/express-checkout?$_apiToken&$_userId&$_deliveryAddress&$_couponCode&$_orderType';
     setState(() {});

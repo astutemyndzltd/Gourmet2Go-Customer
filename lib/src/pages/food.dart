@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/repository/settings_repository.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';

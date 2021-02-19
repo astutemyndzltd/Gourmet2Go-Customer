@@ -26,7 +26,6 @@ ValueNotifier<Setting> setting = new ValueNotifier(new Setting());
 ValueNotifier<Address> deliveryAddress = new ValueNotifier(new Address());
 FirebaseMessagingStreams firebaseMessagingStreams = FirebaseMessagingStreams();
 Coupon coupon = new Coupon.fromJSON({});
-final appData = new AppData();
 final navigatorKey = GlobalKey<NavigatorState>();
 final RouteObserver<PageRoute> routeObserver = new RouteObserver();
 final connectivity = new Connectivity();

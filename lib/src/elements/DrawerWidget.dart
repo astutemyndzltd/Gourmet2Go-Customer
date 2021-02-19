@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';

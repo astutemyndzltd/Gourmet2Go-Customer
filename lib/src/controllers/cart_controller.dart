@@ -1,3 +1,4 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
@@ -98,7 +99,7 @@ class CartController extends ControllerMVC {
     setState(() {
       this.carts.remove(_cart);
       if(this.carts.isEmpty) {
-        settingRepo.appData.clear();
+        appData.clear();
       }
     });
     removeCart(_cart).then((value) {
@@ -125,7 +126,7 @@ class CartController extends ControllerMVC {
       deliveryFee = carts[0].food.restaurant.deliveryFee;
     }*/
 
-    deliveryFee = settingRepo.appData.orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
+    deliveryFee = appData.orderType == 'Delivery' ? carts[0].food.restaurant.deliveryFee : 0;
 
     taxAmount = (subTotal + deliveryFee) * carts[0].food.restaurant.defaultTax / 100;
     total = subTotal + taxAmount + deliveryFee;

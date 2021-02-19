@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/models/dispatchmethod.dart';
 
 import '../models/cuisine.dart';
@@ -124,10 +126,10 @@ class HomeController extends ControllerMVC {
     showableRestaurants = [];
 
     for (var restaurant in nearbyRestaurants) {
-      if (settingsRepo.appData.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
-      if (settingsRepo.appData.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
-      if (settingsRepo.appData.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
-      if (settingsRepo.appData.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
+      if (appData.dispatchMethod == DispatchMethod.delivery && !restaurant.isAvailableForDelivery()) continue;
+      if (appData.dispatchMethod == DispatchMethod.pickup && !restaurant.isAvailableForPickup()) continue;
+      if (appData.dispatchMethod == DispatchMethod.preorder && !restaurant.isClosedAndAvailableForPreorder()) continue;
+      if (appData.dispatchMethod == DispatchMethod.none && !restaurant.isCurrentlyOpen() && !restaurant.openingLaterToday()) continue;
       showableRestaurants.add(restaurant);
     }
 

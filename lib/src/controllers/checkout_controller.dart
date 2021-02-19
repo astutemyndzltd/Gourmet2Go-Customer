@@ -1,4 +1,5 @@
 import 'package:Gourmet2Go/src/helpers/app_config.dart';
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
 
 import '../../src/helpers/helper.dart';
 import '../../src/repository/cart_repository.dart';
@@ -37,8 +38,8 @@ class CheckoutController extends CartController {
   void addOrder(PaymentMethod paymentMethod, VoidCallback onAuthenticationFailed, VoidCallback onSuccess, VoidCallback onError, VoidCallback onRestaurantNotAvailable, VoidCallback onUnavailableForDelivery, VoidCallback onFoodOutOfStock, VoidCallback onValidationError) async {
 
     var order = Order();
-    order.orderType = settingRepo.appData.orderType;
-    order.note = settingRepo.appData.orderNote ?? '';
+    order.orderType = appData.orderType;
+    order.note = appData.orderNote ?? '';
     order.foodOrders = List<FoodOrder>();
     order.tax = carts[0].food.restaurant.defaultTax;
     order.deliveryFee = order.orderType == 'Pickup' ? 0 : carts[0].food.restaurant.deliveryFee;
@@ -68,10 +69,10 @@ class CheckoutController extends CartController {
 
     //////////////////////////////////////////////////////////////
 
-    bool isPreOrder = settingRepo.appData.preorderData != null;
+    bool isPreOrder = appData.preorderData != null;
 
     if (isPreOrder) {
-      var preorderData = settingRepo.appData.preorderData;
+      var preorderData = appData.preorderData;
       order.preorderInfo = preorderData.info;
       if (!restaurant.isAvailableForOrderOn(preorderData.day, preorderData.time)) {
         onRestaurantNotAvailable?.call();
@@ -87,7 +88,7 @@ class CheckoutController extends CartController {
 
     ////////////////////////////////////////////////////////////
 
-    bool isDelivery = settingRepo.appData.orderType == 'Delivery';
+    bool isDelivery = appData.orderType == 'Delivery';
 
     if (isDelivery) {
       if (!restaurant.availableForDelivery) {

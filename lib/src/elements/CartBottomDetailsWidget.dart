@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/controllers/delivery_pickup_controller.dart';
 
 import '../repository/settings_repository.dart';

@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/repository/settings_repository.dart';
 import 'package:flutter/material.dart';
 import '../../generated/l10n.dart';
@@ -13,7 +15,6 @@ class OrderSuccessWidget extends StatelessWidget {
   Widget build(BuildContext context) {
 
     appData.clear();
-
 
     return WillPopScope(
       onWillPop: Helper.of(context).onWillPop,

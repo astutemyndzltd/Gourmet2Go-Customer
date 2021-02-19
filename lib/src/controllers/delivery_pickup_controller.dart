@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/models/route_argument.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,8 +31,8 @@ class DeliveryPickupController extends CartController {
   void onLoadingCartDone() {
 
     if(restaurant.availableForDelivery) {
-      if (settingRepo.appData.orderType == 'Pickup') enableMethod(0);
-      if (settingRepo.appData.orderType == 'Delivery') enableMethod(1);
+      if (appData.orderType == 'Pickup') enableMethod(0);
+      if (appData.orderType == 'Delivery') enableMethod(1);
     }
 
   }
@@ -82,7 +84,7 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getDeliveryMethod().selected = !getDeliveryMethod().selected;
-      settingRepo.appData.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
+      appData.orderType = getDeliveryMethod().selected ? 'Delivery' : null;
       calculateSubtotal();
     });
   }
@@ -95,7 +97,7 @@ class DeliveryPickupController extends CartController {
     });
     setState(() {
       getPickUpMethod().selected = !getPickUpMethod().selected;
-      settingRepo.appData.orderType = getPickUpMethod().selected ? 'Pickup' : null;
+      appData.orderType = getPickUpMethod().selected ? 'Pickup' : null;
       calculateSubtotal();
     });
   }
