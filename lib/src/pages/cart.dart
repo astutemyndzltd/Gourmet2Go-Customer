@@ -26,6 +26,7 @@ class CartWidget extends StatefulWidget {
 class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
 
   CartController _con;
+  AppData data;
 
   _CartWidgetState() : super(CartController()) {
     _con = controller;
@@ -33,6 +34,8 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
 
   @override
   void initState() {
+    // take backup
+    data = appData.clone();
     _con.listenForCarts();
     super.initState();
   }
@@ -45,7 +48,22 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
 
   @override
   void didPopNext() {
+    // take backup
+    data = appData.clone();
+    print('backup taking done');
     _con.listenForCarts();
+  }
+
+  @override
+  void didPushNext() {
+    // restore backup
+    appData.copyFrom(data);
+  }
+
+  @override
+  void didPop() {
+    // restore backup
+    appData.copyFrom(data);
   }
 
 
@@ -187,11 +205,11 @@ class _CartWidgetState extends StateMVC<CartWidget> with RouteAware {
                             TextField(
                               keyboardType: TextInputType.text,
                               onChanged: (String value) {
-                                appData.orderNote = value;
-                                appData.writeToConsole();
+                                data.orderNote = value;
+                                //appData.writeToConsole();
                               },
                               cursorColor: Theme.of(context).accentColor,
-                              controller: TextEditingController()..text = appData.orderNote,
+                              controller: TextEditingController()..text = data.orderNote,
                               //maxLines: null,
                               decoration: InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),

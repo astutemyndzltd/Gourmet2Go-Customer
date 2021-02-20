@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/models/payment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,6 +24,7 @@ class CheckoutWidget extends StatefulWidget {
 
 class _CheckoutWidgetState extends StateMVC<CheckoutWidget>  {
   CheckoutController _con;
+  final AppData data = appData.clone();
 
   _CheckoutWidgetState() : super(CheckoutController()) {
     _con = controller;
@@ -35,6 +38,7 @@ class _CheckoutWidgetState extends StateMVC<CheckoutWidget>  {
 
   @override
   void dispose() {
+    appData.copyFrom(data);
     super.dispose();
   }
 

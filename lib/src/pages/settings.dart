@@ -1,3 +1,6 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+import 'package:Gourmet2Go/src/repository/settings_repository.dart';
+
 import '../../src/elements/AvatarWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:mvc_pattern/mvc_pattern.dart';
@@ -16,11 +19,29 @@ class SettingsWidget extends StatefulWidget {
   _SettingsWidgetState createState() => _SettingsWidgetState();
 }
 
-class _SettingsWidgetState extends StateMVC<SettingsWidget> {
+class _SettingsWidgetState extends StateMVC<SettingsWidget> with RouteAware {
   SettingsController _con;
+  final AppData data = appData.clone();
 
   _SettingsWidgetState() : super(SettingsController()) {
     _con = controller;
+  }
+
+  @override
+  void dispose() {
+    appData.copyFrom(data);
+    super.dispose();
+  }
+
+  @override
+  void didPushNext() {
+    appData.copyFrom(data);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context));
   }
 
   @override
@@ -313,4 +334,5 @@ class _SettingsWidgetState extends StateMVC<SettingsWidget> {
                 )),
     );
   }
+
 }

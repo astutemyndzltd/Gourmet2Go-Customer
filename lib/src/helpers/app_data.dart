@@ -8,6 +8,7 @@ class PreorderData {
 }
 
 class AppData {
+
   String orderType = null, orderNote = null;
   PreorderData preorderData = null;
   DispatchMethod dispatchMethod = DispatchMethod.none;

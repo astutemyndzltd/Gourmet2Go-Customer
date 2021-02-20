@@ -1,3 +1,5 @@
+import 'package:Gourmet2Go/src/helpers/app_data.dart';
+
 import '../../src/models/address.dart';
 import '../../src/repository/settings_repository.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -52,13 +54,15 @@ class UserController extends ControllerMVC {
       loginFormKey.currentState.save();
       Overlay.of(context).insert(loader);
       repository.login(user).then((value) async {
+
+
         if (value != null && value.apiToken != null) {
           if (deliveryAddress.value != null) {
             var address = await this.addAddress(deliveryAddress.value);
             await changeLocation(address);
             deliveryAddress.value = address;
           }
-
+          //appData.clear();
           Navigator.of(scaffoldKey.currentContext).pushReplacementNamed('/Pages', arguments: 2);
         } else {
           scaffoldKey?.currentState?.showSnackBar(SnackBar(
