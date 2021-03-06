@@ -27,9 +27,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>The app requires location services to work</string>
+	<string>We need your location to show you relevant restaurants around your location</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>The app requires location services to work</string>
+	<string>We need your location to show you relevant restaurants around your location</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

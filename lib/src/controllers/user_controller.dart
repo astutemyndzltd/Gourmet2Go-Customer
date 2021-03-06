@@ -55,7 +55,6 @@ class UserController extends ControllerMVC {
       Overlay.of(context).insert(loader);
       repository.login(user).then((value) async {
 
-
         if (value != null && value.apiToken != null) {
           if (deliveryAddress.value != null) {
             var address = await this.addAddress(deliveryAddress.value);
